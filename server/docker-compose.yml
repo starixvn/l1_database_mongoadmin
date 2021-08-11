@@ -10,9 +10,9 @@ services:
     init: true
     networks:
       mongo_internal:
-        ipv4_address: 172.39.20.65
+        ipv4_address: 172.39.20.68
     ports:
-      - '0.0.0.0:17101:17101'
+      - '0.0.0.0:17104:17104'
     environment:
       MONGO_INITDB_ROOT_USERNAME: 'root'
       MONGO_INITDB_ROOT_PASSWORD: '-'
