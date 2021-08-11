@@ -26,6 +26,10 @@ services:
     security_opt:
       - seccomp=unconfined
 
+secrets:
+  keyFile:
+    file: ./secrets/keyFile
+
 networks:
   mongo_internal:
     external:
