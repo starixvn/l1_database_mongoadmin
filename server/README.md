@@ -10,6 +10,10 @@ In addition, a docker network `luminet_internal_network` must be created:
 ```bash
 docker network create --subnet '172.39.0.0/19' luminet_internal_network
 ```
+Also, we must specify the port that the mongo instance will serve in `.env` file
+```env
+MONGOD_PORT=27101
+```
 
 ### Deployment
 Only need to run compose up command:
