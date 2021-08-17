@@ -14,10 +14,7 @@
       if (ref instanceof Mongo) {
         mongo = ref;
       }
-      if (ref instanceof DB) {
-        mongo = ref._mongo;
-      }
-      if (ref instanceof DBCollection) {
+      if (ref && ref._mongo instanceof Mongo) {
         mongo = ref._mongo;
       }
       return mongo;
@@ -57,6 +54,8 @@
     });
 
     this._mongo = _getMongo(ref);
+    if (!this._mongo) return null;
+
     _reload();
     const _handler = {
       get: _getNonExistDBHandler,
@@ -78,8 +77,12 @@
 
   /** Define deploy object */
   const _id = `$DBs`;
-  const version = `1.0.0`;
+  const version = `1.0.1`;
   const changelog = {
+    '1.0.1': [
+      `[${_id}] Support any object that have _mongo field instead of only DB and DBCollection`,
+      `[${_id}] Return null if reference object is invalid`,
+    ],
     '1.0.0': [
       `Release [${_id}]`,
     ],
