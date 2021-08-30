@@ -21,26 +21,30 @@
       enumerable: true,
     };
     Object.defineProperties(this, {
-      toString: Object.extend({value: function (...p) { return _toString(...p) }}, _descriptor),
-      tojson  : Object.extend({value: function (...p) { return _toString(...p) }}, _descriptor),
-      func    : Object.extend({value: function (...p) { return _func(...p) }}, _descriptor),
+      toString: Object.assign({value: function () { return _toString(...arguments) }}, _descriptor),
+      tojson  : Object.assign({value: function () { return _toString(...arguments) }}, _descriptor),
+      func    : Object.assign({value: function () { return _func    (...arguments) }}, _descriptor),
     });
 
-    $Object.deepFreeze(this);
+    Object.deepFreeze(this);
     return this;
   };
-  const __$Class__ = $Class.prototype = {
-    help: function () {
-      return `\
+  const __$Class__ = function () {
+    return {
+      help: function () {
+        return `\
 [$Class]
   .func()
 `;
-    },
+      },
+    };
   };
-  const $ClassExt = {
-    is$Class: (obj) => {
-      return $Schema({'!data': $Class}).test({data: obj});
-    },
+  const $ClassExt = function () {
+    return {
+      is$Class: (obj) => {
+        return $Schema({'!data': $Clwass}).test({data: obj});
+      },
+    };
   };
 
   /** Define deploy object */
@@ -53,12 +57,12 @@
   };
   const value = new Code(`\
 (() => {
-  const $Class = Object.extend(${tojson($Class)}, ${tojson($ClassExt)});
-  $Class.prototype = ${tojson(__$Class__)};
+  const $Class = Object.assign(${$Class}, (${$ClassExt})());
+  $Class.prototype = (${__$Class__})();
   $Class.toString = $Class.tojson = function () {return this.prototype.help()};
   $Class.prototype.toString = $Class.prototype.tojson = function () { return this.help(); }
 
-  $Object.deepFreeze($Class);
+  Object.deepFreeze($Class);
   return $Class;
 })()`);
 
