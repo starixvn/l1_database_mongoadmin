@@ -103,6 +103,10 @@
       if (util.isString(this.sch[key].value) && (typeof this.obj[key] == this.sch[key].value)) {
         return this.result.value &= 1;
       }
+      /** [OK] Matched defined class name */
+      if (util.isString(this.sch[key].value) && (this.obj[key]?.constructor?.name == this.sch[key].value)) {
+        return this.result.value &= 1;
+      }
       /** [OK] Matched defined class */
       if (util.isFunction(this.sch[key].value) && (this.obj[key] instanceof this.sch[key].value)) {
         return this.result.value &= 1;

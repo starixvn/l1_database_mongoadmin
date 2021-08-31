@@ -1,7 +1,7 @@
 {
   const $Class = function () {
     /** Self construct */
-    if (!(this instanceof $Class)) return new $Class();
+    if (!(this instanceof $Class)) return new $Class(...arguments);
 
     /** Private constant */
     const global = Function('return this;')();
