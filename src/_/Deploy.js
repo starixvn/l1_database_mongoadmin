@@ -1,7 +1,7 @@
 {
   const $Deploy = function (dbName) {
     /** Self construct */
-    if (!(this instanceof $Deploy)) return new $Deploy(dbName);
+    if (!(this instanceof $Deploy)) return new $Deploy(...arguments);
 
     /** Private constant */
     const global = Function('return this;')();
@@ -17,10 +17,11 @@
     const _log = (label, title, message, type, newline) => {
       const d  = ISODate().toISOString().padEnd(29);
       const t  = ((typeof type != "string") ? 'V' : type.trim().substr(0,1)).toUpperCase().padEnd(3);
+      const l  = label.padEnd(15);
       const tt = (typeof title != "string") ? ' ' : title;
       const m  = (typeof message != "string") ? tojson(message) : message;
 
-      console.log(`${d}${t}${label} [${tt}] • ${m}`);
+      console.log(`${d}${t}${l} [${tt}] • ${m}`);
     };
     const _logUpserted = (value, _id, version) => {
       if (value) {
@@ -45,7 +46,7 @@
     }
     const _run = async (_id, version, changelog, value) => {
       if (_id == null || value == null) return;
-      label = `${prefix}-${_id.toUpperCase().padEnd(10)}`;
+      label = `${prefix}-${_id.toUpperCase()}`;
 
       _runLocal(_id, version, value);
       if (!!global.db) {
