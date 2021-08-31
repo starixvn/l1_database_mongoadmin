@@ -66,6 +66,9 @@
     Object.deepFreeze(this);
     return this;
   };
+  const $LogExt = function () {
+    return {};
+  };
   const __$Log__ = function () {
     return {
       help: function () {
@@ -92,7 +95,7 @@
   };
   const value = new Code(`\
 (() => {
-  const $Log = ${$Log};
+  const $Log = Object.assign(${$Log}, (${$LogExt})());
   $Log.prototype = (${__$Log__})();
   $Log.toString = $Log.tojson = function () {return this.prototype.help()};
   $Log.prototype.toString = $Log.prototype.tojson = function () { return this.help(); }
