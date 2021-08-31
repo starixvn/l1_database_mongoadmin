@@ -29,6 +29,9 @@
     Object.deepFreeze(this);
     return this;
   };
+  const $ClassExt = function () {
+    return {};
+  };
   const __$Class__ = function () {
     return {
       help: function () {
@@ -36,13 +39,6 @@
 [$Class]
   .func()
 `;
-      },
-    };
-  };
-  const $ClassExt = function () {
-    return {
-      is$Class: (obj) => {
-        return $Schema({'!data': $Clwass}).test({data: obj});
       },
     };
   };

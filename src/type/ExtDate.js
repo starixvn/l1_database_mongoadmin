@@ -82,6 +82,9 @@ ${_parts.subsecond}${_parts.timezone}\
     Object.deepFreeze(this);
     return this;
   };
+  const $ExtDateExt = function () {
+    return {};
+  };
   const __$ExtDate__ = function () {
     return {
       help: function () {
@@ -103,7 +106,7 @@ ${_parts.subsecond}${_parts.timezone}\
   };
   const value = new Code(`\
 (() => {
-  const $ExtDate = ${$ExtDate};
+  const $ExtDate = Object.assign(${$ExtDate}, (${$ExtDateExt})());
   $ExtDate.prototype = (${__$ExtDate__})();
   $ExtDate.toString = $ExtDate.tojson = function () {return this.prototype.help()};
   $ExtDate.prototype.toString = $ExtDate.prototype.tojson = function () { return this.help(); }
