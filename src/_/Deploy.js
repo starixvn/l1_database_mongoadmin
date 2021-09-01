@@ -59,9 +59,9 @@
       enumerable: true,
     };
     Object.defineProperties(this, {
-      toString  : Object.assign({value: function () { return _toString(...arguments) }}, _descriptor),
-      tojson    : Object.assign({value: function () { return _toString(...arguments) }}, _descriptor),
-      run       : Object.assign({value: function () { return _run     (...arguments) }}, _descriptor),
+      [util.inspect.custom] : Object.assign({value: function () { return _toString(...arguments) }}, _descriptor),
+      toString              : Object.assign({value: function () { return _toString(...arguments) }}, _descriptor),
+      run                   : Object.assign({value: function () { return _run     (...arguments) }}, _descriptor),
     });
 
     Object.deepFreeze(this);

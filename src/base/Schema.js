@@ -47,7 +47,7 @@
     };
     const _getSchemaString = (sch) => {
       if (util.isArray(sch)) {
-        return `[${sch.map($Object.typeof).join(', ')}]`;
+        return `[${sch.map(_ => typeof _).join(', ')}]`;
       }
       if (util.isObject(sch)) {
         return `{${Object.keys(sch).map(_mapKeyObjectToString, {obj: sch}).join(', ')}}`;
@@ -63,8 +63,8 @@
       if (isVerbose) {
         const mandatory = thisObj.sch[key].mandatory ? '!' : ' ';
         let schema = _getSchemaString(thisObj.sch[key].value);
-        _logger.verbose(`Test ${key.pad(keyLen, 1)}`, `[${mandatory}] - ${schema}`);
-        _logger.verbose(`Test ${key.pad(keyLen, 1)}`, `      » ${JSON.stringify(obj[key])}`);
+        _logger.verbose(`Test ${key.padEnd(keyLen)}`, `[${mandatory}] - ${schema}`);
+        _logger.verbose(`Test ${key.padEnd(keyLen)}`, `      » ${JSON.stringify(obj[key])}`);
       }
     };
     const _testFieldSchemaArray = function (sch) {
@@ -139,10 +139,10 @@
       enumerable: true,
     };
     Object.defineProperties(this, {
-      toString        : Object.assign({value: function () { return _toString        (...arguments) }}, _descriptor),
-      tojson          : Object.assign({value: function () { return _toString        (...arguments) }}, _descriptor),
-      getSchemaObject : Object.assign({value: function () { return _getSchemaObject (...arguments) }}, _descriptor),
-      test            : Object.assign({value: function () { return _test            (...arguments) }}, _descriptor),
+      [util.inspect.custom] : Object.assign({value: function () { return _toString        (...arguments) }}, _descriptor),
+      toString              : Object.assign({value: function () { return _toString        (...arguments) }}, _descriptor),
+      getSchemaObject       : Object.assign({value: function () { return _getSchemaObject (...arguments) }}, _descriptor),
+      test                  : Object.assign({value: function () { return _test            (...arguments) }}, _descriptor),
     });
 
     schObj = _parseSchemaObject(schema);

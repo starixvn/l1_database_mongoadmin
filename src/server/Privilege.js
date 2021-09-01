@@ -8,12 +8,14 @@
 
     const privSchema = $Schema({
       '!resource': [
-        { '!db'         : "string",
-          '!collection' : "string",
+        { '!db'             : "string",
+          '!collection'     : "string",
         },
-        { '!anyResource': "boolean",
+        { '!anyResource'    : "boolean",
         },
-        { '!cluster'    : "boolean",
+        { '!cluster'        : "boolean",
+        },
+        { '!system_buckets' : "string",
         },
       ],
       '!actions': "string",
@@ -24,20 +26,22 @@
 
     /** Basic function */
     const _toString = () => {
-      let str = `[$Privilege]`;
       if (!privObj) {
-        str = `Invalid [$Privilege]`;
+        return `Invalid [$Privilege]`;
       }
       if (!util.isNullOrUndefined(privObj.resource.db) || !util.isNullOrUndefined(privObj.resource.collection)) {
-        str = `[$Privilege] ${privObj.resource.db || '*'}.${privObj.resource.collection || '*'}`;
+        return `[$Privilege] ${privObj.resource.db || '*'}.${privObj.resource.collection || '*'}`;
       }
       if (!util.isNullOrUndefined(privObj.resource.anyResource)) {
-        str = `[$Privilege] anyResource`;
+        return `[$Privilege] anyResource`;
       }
       if (!util.isNullOrUndefined(privObj.resource.cluster)) {
-        str = `[$Privilege] cluster`;
+        return `[$Privilege] cluster`;
       }
-      return str;
+      if (!util.isNullOrUndefined(privObj.resource.system_buckets)) {
+        return `[$Privilege] system_buckets`;
+      }
+      return `[$Privilege]`;
     };
     const _valueOf = () => {
       if (!privObj) {
@@ -69,8 +73,8 @@ ${privObj.resource.db}.${privObj.resource.collection || '*'}
         return _genDataObj(db);
       }
       if (collection?.constructor?.name == "Collection") {
-        db = collection._db;
-        collection = collection._shortName;
+        db = collection._database;
+        collection = collection._name;
       }
       if (db?.constructor?.name == "Database") {
         db = db._name;
@@ -96,12 +100,12 @@ ${privObj.resource.db}.${privObj.resource.collection || '*'}
       enumerable: true,
     };
     Object.defineProperties(this, {
-      toString: Object.assign({value: function () { return _toString(...arguments) }}, _descriptor),
-      tojson  : Object.assign({value: function () { return _toString(...arguments) }}, _descriptor),
-      valueOf : Object.assign({value: function () { return _valueOf (...arguments) }}, _descriptor),
-      getRaw  : Object.assign({value: function () { return _getRaw  (...arguments) }}, _descriptor),
-      getRef  : Object.assign({value: function () { return _getRef  (...arguments) }}, _descriptor),
-      getDef  : Object.assign({value: function () { return _getDef  (...arguments) }}, _descriptor),
+      [util.inspect.custom] : Object.assign({value: function () { return _toString(...arguments) }}, _descriptor),
+      toString              : Object.assign({value: function () { return _toString(...arguments) }}, _descriptor),
+      valueOf               : Object.assign({value: function () { return _valueOf (...arguments) }}, _descriptor),
+      getRaw                : Object.assign({value: function () { return _getRaw  (...arguments) }}, _descriptor),
+      getRef                : Object.assign({value: function () { return _getRef  (...arguments) }}, _descriptor),
+      getDef                : Object.assign({value: function () { return _getDef  (...arguments) }}, _descriptor),
     });
 
     _genData();

@@ -59,10 +59,10 @@ ${_parts.subsecond}${_parts.timezone}\
       enumerable: true,
     };
     Object.defineProperties(this, {
-      toString: Object.assign({value: function () { return _toString(...arguments) }}, _descriptor),
-      tojson  : Object.assign({value: function () { return _toString(...arguments) }}, _descriptor),
-      valueOf : Object.assign({value: function () { return _valueOf (...arguments) }}, _descriptor),
-      toDate  : Object.assign({value: function () { return _toDate  (...arguments) }}, _descriptor),
+      [util.inspect.custom] : Object.assign({value: function () { return _toString(...arguments) }}, _descriptor),
+      toString              : Object.assign({value: function () { return _toString(...arguments) }}, _descriptor),
+      valueOf               : Object.assign({value: function () { return _valueOf (...arguments) }}, _descriptor),
+      toDate                : Object.assign({value: function () { return _toDate  (...arguments) }}, _descriptor),
     });
 
     if (typeof value === "string") {

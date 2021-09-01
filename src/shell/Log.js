@@ -52,14 +52,14 @@
       enumerable: true,
     };
     Object.defineProperties(this, {
-      toString: Object.assign({value: function () { return _toString(...arguments) }}, _descriptor),
-      tojson  : Object.assign({value: function () { return _toString(...arguments) }}, _descriptor),
-      getLabel: Object.assign({value: function () { return _getLabel(...arguments) }}, _descriptor),
-      setLabel: Object.assign({value: function () { return _setLabel(...arguments) }}, _descriptor),
-      verbose : Object.assign({value: function () { return _verbose (...arguments) }}, _descriptor),
-      info    : Object.assign({value: function () { return _info    (...arguments) }}, _descriptor),
-      warn    : Object.assign({value: function () { return _warn    (...arguments) }}, _descriptor),
-      err     : Object.assign({value: function () { return _err     (...arguments) }}, _descriptor),
+      [util.inspect.custom] : Object.assign({value: function () { return _toString(...arguments) }}, _descriptor),
+      toString              : Object.assign({value: function () { return _toString(...arguments) }}, _descriptor),
+      getLabel              : Object.assign({value: function () { return _getLabel(...arguments) }}, _descriptor),
+      setLabel              : Object.assign({value: function () { return _setLabel(...arguments) }}, _descriptor),
+      verbose               : Object.assign({value: function () { return _verbose (...arguments) }}, _descriptor),
+      info                  : Object.assign({value: function () { return _info    (...arguments) }}, _descriptor),
+      warn                  : Object.assign({value: function () { return _warn    (...arguments) }}, _descriptor),
+      err                   : Object.assign({value: function () { return _err     (...arguments) }}, _descriptor),
     });
 
     _setLabel(label);

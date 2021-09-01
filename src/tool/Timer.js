@@ -49,17 +49,17 @@
       enumerable: true,
     };
     Object.defineProperties(this, {
-      toString          : Object.assign({value: function () { return _toString          (...arguments) }}, _descriptor),
-      tojson            : Object.assign({value: function () { return _toString          (...arguments) }}, _descriptor),
-      register          : Object.assign({value: function () { return _register          (...arguments) }}, _descriptor),
-      startTimer        : Object.assign({value: function () { return _startTimer        (...arguments) }}, _descriptor),
-      stopTimer         : Object.assign({value: function () { return _stopTimer         (...arguments) }}, _descriptor),
-      getTimer          : Object.assign({value: function () { return _getTimer          (...arguments) }}, _descriptor),
-      getISOTimer       : Object.assign({value: function () { return _getISOTimer       (...arguments) }}, _descriptor),
-      getElapsedDuration: Object.assign({value: function () { return _getElapsedDuration(...arguments) }}, _descriptor),
-      getDifferent      : Object.assign({value: function () { return _getDifferent      (...arguments) }}, _descriptor),
-      getDuration       : Object.assign({value: function () { return _getDuration       (...arguments) }}, _descriptor),
-      getTimerDuration  : Object.assign({value: function () { return _getTimerDuration  (...arguments) }}, _descriptor),
+      [util.inspect.custom] : Object.assign({value: function () { return _toString          (...arguments) }}, _descriptor),
+      toString              : Object.assign({value: function () { return _toString          (...arguments) }}, _descriptor),
+      register              : Object.assign({value: function () { return _register          (...arguments) }}, _descriptor),
+      startTimer            : Object.assign({value: function () { return _startTimer        (...arguments) }}, _descriptor),
+      stopTimer             : Object.assign({value: function () { return _stopTimer         (...arguments) }}, _descriptor),
+      getTimer              : Object.assign({value: function () { return _getTimer          (...arguments) }}, _descriptor),
+      getISOTimer           : Object.assign({value: function () { return _getISOTimer       (...arguments) }}, _descriptor),
+      getElapsedDuration    : Object.assign({value: function () { return _getElapsedDuration(...arguments) }}, _descriptor),
+      getDifferent          : Object.assign({value: function () { return _getDifferent      (...arguments) }}, _descriptor),
+      getDuration           : Object.assign({value: function () { return _getDuration       (...arguments) }}, _descriptor),
+      getTimerDuration      : Object.assign({value: function () { return _getTimerDuration  (...arguments) }}, _descriptor),
     });
 
     _startTimer();
