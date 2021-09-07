@@ -176,8 +176,8 @@
 (() => {
   const $Schema = Object.assign(${$Schema}, (${$SchemaExt})());
   $Schema.prototype = (${__$Schema__})();
-  $Schema.toString = $Schema.tojson = function () {return this.prototype.help()};
-  $Schema.prototype.toString = $Schema.prototype.tojson = function () { return this.help(); }
+  $Schema.toString = $Schema[util.inspect.custom] = function () {return this.prototype.help()};
+  $Schema.prototype.toString = $Schema.prototype[util.inspect.custom] = function () { return this.help(); }
 
   Object.deepFreeze($Schema);
   return $Schema;

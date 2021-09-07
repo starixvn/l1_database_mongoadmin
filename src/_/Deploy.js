@@ -97,8 +97,8 @@
 (() => {
   const $Deploy = Object.assign(${$Deploy}, (${$DeployExt})());
   $Deploy.prototype = (${__$Deploy__})();
-  $Deploy.toString = $Deploy.tojson = function () {return this.prototype.help()};
-  $Deploy.prototype.toString = $Deploy.prototype.tojson = function () { return this.help(); }
+  $Deploy.toString = $Deploy[util.inspect.custom] = function () {return this.prototype.help()};
+  $Deploy.prototype.toString = $Deploy.prototype[util.inspect.custom] = function () { return this.help(); }
 
   Object.deepFreeze($Deploy);
   return $Deploy;

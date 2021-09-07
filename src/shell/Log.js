@@ -97,8 +97,8 @@
 (() => {
   const $Log = Object.assign(${$Log}, (${$LogExt})());
   $Log.prototype = (${__$Log__})();
-  $Log.toString = $Log.tojson = function () {return this.prototype.help()};
-  $Log.prototype.toString = $Log.prototype.tojson = function () { return this.help(); }
+  $Log.toString = $Log[util.inspect.custom] = function () {return this.prototype.help()};
+  $Log.prototype.toString = $Log.prototype[util.inspect.custom] = function () { return this.help(); }
 
   Object.deepFreeze($Log);
   return $Log;

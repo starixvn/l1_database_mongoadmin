@@ -108,8 +108,8 @@ ${_parts.subsecond}${_parts.timezone}\
 (() => {
   const $ExtDate = Object.assign(${$ExtDate}, (${$ExtDateExt})());
   $ExtDate.prototype = (${__$ExtDate__})();
-  $ExtDate.toString = $ExtDate.tojson = function () {return this.prototype.help()};
-  $ExtDate.prototype.toString = $ExtDate.prototype.tojson = function () { return this.help(); }
+  $ExtDate.toString = $ExtDate[util.inspect.custom] = function () {return this.prototype.help()};
+  $ExtDate.prototype.toString = $ExtDate.prototype[util.inspect.custom] = function () { return this.help(); }
 
   Object.deepFreeze($ExtDate);
   return $ExtDate;
