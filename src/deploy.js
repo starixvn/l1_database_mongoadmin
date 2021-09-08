@@ -1,14 +1,12 @@
 {
   const oldDB = global.db;
   global.db = api.admin;
+  global.dbs = DBs(global.db);
 
   load(`_/Deploy.js`);
 
-  const tasks = [];
-  ls('.', _isDir).forEach(_ => {
-    tasks.push(loadFolder(_));
-  });
-  console.log(Promise.allSettled(tasks).then(_ => _.value));
+  ls('.', _isDir).forEach(loadFolder);
 
   global.db = oldDB;
+  global.dbs = DBs(global.db);
 }

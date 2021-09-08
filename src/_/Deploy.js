@@ -33,24 +33,24 @@
         _log(label, `Modified`, `[${_id}@${lastVersion.version}] => [${_id}@${version}]`, `I`, true);
       }
     }
-    const _runLocal = async (_id, version, value) => {
-      global[_id] = eval("(" + value.code + ")");
+    const _runLocal = (_id, version, value) => {
+      execute(value);
       _log(label, `Local`, `[${_id}@${version}]`);
     }
-    const _runServer = async (_id, version, changelog, value) => {
-      const lastVersion = await global.dbs[dbName].system.js.findOne({_id}, {_id: 0, version: 1});
-      const res = await global.dbs[dbName].system.js.updateOne({_id}, {$set: {value, version, changelog}}, {upsert: true});
+    const _runServer = (_id, version, changelog, value) => {
+      const lastVersion = global.dbs[dbName].system.js.findOne({_id}, {_id: 0, version: 1});
+      const res = global.dbs[dbName].system.js.updateOne({_id}, {$set: {value, version, changelog}}, {upsert: true});
 
       _logUpserted(res.upsertedCount, _id, version);
       _logModified(res.modifiedCount, _id, lastVersion, version);
     }
-    const _run = async (_id, version, changelog, value) => {
+    const _run = (_id, version, changelog, value) => {
       if (_id == null || value == null) return;
       label = `${prefix}-${_id.toUpperCase()}`;
 
       _runLocal(_id, version, value);
       if (!!global.db) {
-        await _runServer(_id, version, changelog, value);
+        _runServer(_id, version, changelog, value);
       }
     }
 
@@ -94,15 +94,15 @@
     ],
   };
   const value = new Code(`\
-(() => {
+{
   const $Deploy = Object.assign(${$Deploy}, (${$DeployExt})());
   $Deploy.prototype = (${__$Deploy__})();
   $Deploy.toString = $Deploy[util.inspect.custom] = function () {return this.prototype.help()};
   $Deploy.prototype.toString = $Deploy.prototype[util.inspect.custom] = function () { return this.help(); }
 
   Object.deepFreeze($Deploy);
-  return $Deploy;
-})()`);
+  global.$Deploy = $Deploy;
+}`);
 
   /** Deploy */
   $Deploy(`BASE`).run(_id, version, changelog, value);

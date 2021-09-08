@@ -101,15 +101,15 @@
     ],
   };
   const value = new Code(`\
-(() => {
+{
   const $Timer = Object.assign(${$Timer}, (${$TimerExt})());
   $Timer.prototype = (${__$Timer__})();
   $Timer.toString = $Timer[util.inspect.custom] = function () {return this.prototype.help()};
   $Timer.prototype.toString = $Timer.prototype[util.inspect.custom] = function () { return this.help(); }
 
   Object.deepFreeze($Timer);
-  return $Timer;
-})()`);
+  global.$Timer = $Timer;
+}`);
 
   /** Deploy */
   $Deploy(`TOOL`).run(_id, version, changelog, value);

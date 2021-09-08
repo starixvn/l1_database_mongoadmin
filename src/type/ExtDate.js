@@ -112,7 +112,7 @@ ${_parts.subsecond}${_parts.timezone}\
   $ExtDate.prototype.toString = $ExtDate.prototype[util.inspect.custom] = function () { return this.help(); }
 
   Object.deepFreeze($ExtDate);
-  return $ExtDate;
+  global.$ExtDate = $ExtDate;
 })()`);
 
   /** Deploy */

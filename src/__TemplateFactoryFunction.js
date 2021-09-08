@@ -52,15 +52,15 @@
     ],
   };
   const value = new Code(`\
-(() => {
+{
   const $Class = Object.assign(${$Class}, (${$ClassExt})());
   $Class.prototype = (${__$Class__})();
   $Class.toString = $Class[util.inspect.custom] = function () {return this.prototype.help()};
   $Class.prototype.toString = $Class.prototype[util.inspect.custom] = function () { return this.help(); }
 
   Object.deepFreeze($Class);
-  return $Class;
-})()`);
+  global.$Class = $Class;
+}`);
 
   /** Deploy */
   $Deploy(`FACTORY`).run(_id, version, changelog, value);

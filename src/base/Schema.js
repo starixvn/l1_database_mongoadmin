@@ -173,15 +173,15 @@
     ],
   };
   const value = new Code(`\
-(() => {
+{
   const $Schema = Object.assign(${$Schema}, (${$SchemaExt})());
   $Schema.prototype = (${__$Schema__})();
   $Schema.toString = $Schema[util.inspect.custom] = function () {return this.prototype.help()};
   $Schema.prototype.toString = $Schema.prototype[util.inspect.custom] = function () { return this.help(); }
 
   Object.deepFreeze($Schema);
-  return $Schema;
-})()`);
+  global.$Schema = $Schema;
+}`);
 
   /** Deploy */
   $Deploy(`BASE`).run(_id, version, changelog, value);

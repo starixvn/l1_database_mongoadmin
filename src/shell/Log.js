@@ -101,7 +101,7 @@
   $Log.prototype.toString = $Log.prototype[util.inspect.custom] = function () { return this.help(); }
 
   Object.deepFreeze($Log);
-  return $Log;
+  global.$Log = $Log;
 })()`);
 
   /** Deploy */
