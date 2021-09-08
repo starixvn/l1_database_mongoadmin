@@ -1,5 +1,5 @@
 {
-  const $Privilege = function (db, collection, ...actions) {
+  const $Privilege = function (resource, ...actions) {
     /** Self construct */
     if (!(this instanceof $Privilege)) return new $Privilege(...arguments);
 
@@ -47,17 +47,25 @@
       if (!privObj) {
         return null;
       }
+      let resName = ``;
+      if (!util.isNullOrUndefined(privObj.resource.db) || !util.isNullOrUndefined(privObj.resource.collection)) {
+        resName = `${privObj.resource.db || '*'}.${privObj.resource.collection || '*'}`;
+      }
+      if (!util.isNullOrUndefined(privObj.resource.anyResource)) {
+        resName = `anyResource`;
+      }
+      if (!util.isNullOrUndefined(privObj.resource.cluster)) {
+        resName = `cluster`;
+      }
+      if (!util.isNullOrUndefined(privObj.resource.system_buckets)) {
+        resName = `system_buckets`;
+      }
       return `\
-${privObj.resource.db}.${privObj.resource.collection || '*'}
+${resName}
 (${privObj.actions.sort().join(', ')})`;
     };
 
     /** Private function */
-    const _reduceActions = (accumulator, currentValue) => {
-      const data = util.isArray(currentValue) ? currentValue : [currentValue];
-      accumulator = [...accumulator, ...data];
-      return accumulator;
-    };
     const _genDataObj = (obj) => {
       if (!privSchema.test(obj)) {
         _logger.err(`Audit`, `Invalid input data for privilege object`);
@@ -66,22 +74,40 @@ ${privObj.resource.db}.${privObj.resource.collection || '*'}
       privObj = obj;
     }
     const _genData = () => {
-      if ($Privilege.is$Privilege(db)) {
-        return _genDataObj(db.getDef());
+      if ($Privilege.is$Privilege(resource)) {
+        return _genDataObj(resource.getDef());
       }
-      if (privSchema.test(db)) {
-        return _genDataObj(db);
+      if (privSchema.test(resource)) {
+        return _genDataObj(resource);
       }
-      if (collection?.constructor?.name == "Collection") {
-        db = collection._database;
-        collection = collection._name;
-      }
-      if (db?.constructor?.name == "Database") {
-        db = db._name;
+      let _resource = resource;
+      let _actions = [actions].flat(Infinity);
+      switch (resource?.constructor?.name) {
+        case "Collection":
+          _resource = {
+            db        : resource._database._name,
+            collection: resource._name,
+          };
+          break;
+        case "Database":
+          _resource = {
+            db        : resource._name,
+            collection: '',
+          };
+          break;
+        case "Mongo":
+          _resource = {
+            db        : '',
+            collection: '',
+          };
+          break;
+      };
+      if (_resource?.db == '_') {
+        _resource.db = '';
       }
       const data = {
-        resource: {db, collection},
-        actions: actions.reduce(_reduceActions, []),
+        resource: _resource,
+        actions : _actions,
       }
       return _genDataObj(data);
     };
@@ -114,8 +140,7 @@ ${privObj.resource.db}.${privObj.resource.collection || '*'}
   };
   const $PrivilegeExt = function () {
     return {
-      template: {
-        public  : [`find`],
+      actions: {
         monitor : [`collStats`, `indexStats`],
         read    : [`find`, `listIndexes`],
         list    : [`listCollections`],
@@ -141,7 +166,7 @@ ${privObj.resource.db}.${privObj.resource.collection || '*'}
     return {
       help: function () {
         return `\
-[$Privilege](db, collection, ...actions) - Privilege object helper
+[$Privilege](resource, ...actions) - Privilege object helper
   .getRaw() - Return raw privilege object
   .getRef() - Return the privilege object used for reference
   .getDef() - Return the privilege object used for definition
@@ -152,22 +177,22 @@ ${privObj.resource.db}.${privObj.resource.collection || '*'}
 
   /** Define deploy object */
   const _id = `$Privilege`;
-  const version = `0.2.0`;
+  const version = `0.2.1`;
   const changelog = {
     '0.2.0': [
       `Release [${_id}]`,
     ],
   };
   const value = new Code(`\
-(() => {
+{
   const $Privilege = Object.assign(${$Privilege}, (${$PrivilegeExt})());
   $Privilege.prototype = (${__$Privilege__})();
-  $Privilege.toString = $Privilege.tojson = function () { return this.prototype.help() };
-  $Privilege.prototype.toString = $Privilege.prototype.tojson = function () { return this.help(); }
+  $Privilege.toString = $Privilege[util.inspect.custom] = function () { return this.prototype.help() };
+  $Privilege.prototype.toString = $Privilege.prototype[util.inspect.custom] = function () { return this.help(); }
 
   Object.deepFreeze($Privilege);
-  return $Privilege;
-})()`);
+  global.$Privilege = $Privilege;
+}`);
 
   /** Deploy */
   $Deploy(`SRV`).run(_id, version, changelog, value);
