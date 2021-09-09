@@ -28,7 +28,7 @@
       const m  = (typeof message != "string") ? JSON.stringify(message) : message;
 
       const msg = `${d}${t}${_label} [${tt}] • ${m}`;
-      console.log(msg);
+      print(msg);
     };
     const _verbose = (title, message) => {
       const type = 'VERBOSE';

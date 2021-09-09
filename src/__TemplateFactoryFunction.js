@@ -4,7 +4,10 @@
     if (!(this instanceof $Class)) return new $Class(...arguments);
 
     /** Private constant */
-    const global = Function('return this;')();
+    const exampleConst = 1;
+
+    /** Private variable */
+    const exampleVar = 1;
 
     /** Basic function */
     const _toString = () => {

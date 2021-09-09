@@ -21,7 +21,7 @@
       const tt = (typeof title != "string") ? ' ' : title;
       const m  = (typeof message != "string") ? tojson(message) : message;
 
-      console.log(`${d}${t}${l} [${tt}] • ${m}`);
+      print(`${d}${t}${l} [${tt}] • ${m}`);
     };
     const _logUpserted = (value, _id, version) => {
       if (value) {
