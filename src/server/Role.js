@@ -153,7 +153,7 @@ ${srvRoleObj.db._name}.${srvRoleObj.role}
           return;
         }
         _logger.info(title, `${cmd.roles.length} roles granted to [${cmd.grantRolesToRole}]`);
-        granting.forEach(_ => _logger.info(title, `  ${_}`));
+        granting.forEach(_ => _logger.info(title, `· ${_}`));
       }
     };
     const _deployGrantedPrivileges = () => {
@@ -170,8 +170,8 @@ ${srvRoleObj.db._name}.${srvRoleObj.role}
           _logger.err(title, res.errmsg);
           return;
         }
-        _logger.info(title, `${cmd.privileges.length} privileges granted to [${cmd.grantRolesToRole}]`);
-        granting.forEach(_ => _logger.info(title, `  ${_}`));
+        _logger.info(title, `${cmd.privileges.length} privileges granted to [${cmd.grantPrivilegesToRole}]`);
+        granting.forEach(_ => _logger.info(title, `· ${_}`));
       }
     };
     const _deployGrantedRole = () => {
@@ -195,7 +195,7 @@ ${srvRoleObj.db._name}.${srvRoleObj.role}
           return;
         }
         _logger.info(title, `${cmd.roles.length} roles revoked from [${cmd.revokeRolesFromRole}]`);
-        revoking.forEach(_ => _logger.info(title, `  ${_}`));
+        revoking.forEach(_ => _logger.info(title, `· ${_}`));
       }
     };
     const _deployRevokedPrivileges = () => {
@@ -212,8 +212,8 @@ ${srvRoleObj.db._name}.${srvRoleObj.role}
           _logger.err(title, res.errmsg);
           return;
         }
-        _logger.info(title, `${cmd.privileges.length} privileges revoked from [${cmd.grantRolesToRole}]`);
-        revoking.forEach(_ => _logger.info(title, `  ${_}`));
+        _logger.info(title, `${cmd.privileges.length} privileges revoked from [${cmd.revokePrivilegesFromRole}]`);
+        revoking.forEach(_ => _logger.info(title, `· ${_}`));
       }
     };
     const _deployRevokedRole = () => {

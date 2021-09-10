@@ -137,7 +137,7 @@ ${srvUserObj.db._name}.${srvUserObj.user}
           return;
         }
         _logger.info(title, `${cmd.roles.length} roles granted to [${cmd.grantRolesToUser}]`);
-        granting.forEach(_ => _logger.info(title, `  ${_}`));
+        granting.forEach(_ => _logger.info(title, `· ${_}`));
       }
     };
     const _deployGrantedUser = async () => {
@@ -160,7 +160,7 @@ ${srvUserObj.db._name}.${srvUserObj.user}
           return;
         }
         _logger.info(title, `${cmd.roles.length} roles revoked from [${cmd.revokeRolesFromUser}]`);
-        revoking.forEach(_ => _logger.info(title, `  ${_}`));
+        revoking.forEach(_ => _logger.info(title, `· ${_}`));
       }
     };
     const _deployRevokedUser = async () => {
