@@ -80,13 +80,13 @@ ${srvUserObj.db._name}.${srvUserObj.user}
       obj.db = userObj.db.getSiblingDB(obj.db);
       return obj;
     }
-    const _loadServerUser = async () => {
+    const _loadServerUser = () => {
       const title = `ServerUser`;
       if (userObj == null) return;
       const cmd = {
         usersInfo: userObj.user,
       };
-      const res = await userObj.db.runCommand(cmd);
+      const res = userObj.db.runCommand(cmd);
       if (!res.ok) {
         _logger.err(title, res.errmsg);
         srvUserObj = null;
@@ -105,13 +105,13 @@ ${srvUserObj.db._name}.${srvUserObj.user}
       delete data.mechanisms;
       srvUserObj = _parseUserObj(data);
     };
-    const _getSrv = async () => {
-      await _loadServerUser();
+    const _getSrv = () => {
+      _loadServerUser();
       return srvUserObj;
     };
-    const _syncUser = async () => {
+    const _syncUser = () => {
       const title = `Sync`;
-      await _loadServerUser();
+      _loadServerUser();
       if (!srvUserObj) {
         _logger.warn(title, `Error loading server user. Local user is not synced.`);
         return;
@@ -122,7 +122,7 @@ ${srvUserObj.db._name}.${srvUserObj.user}
       }
       userObj = srvUserObj;
     };
-    const _deployGrantedRoles = async () => {
+    const _deployGrantedRoles = () => {
       const title = `GrantRoles`;
       const cmd = {
         grantRolesToUser: srvUserObj.user,
@@ -131,7 +131,7 @@ ${srvUserObj.db._name}.${srvUserObj.user}
       const granting = userObj.roles.filter(_ => !srvUserObj.roles.map(Object.valueOf).includes(_.valueOf()));
       if (granting.length > 0) {
         cmd.roles = granting.map($Role.getRef);
-        const res = await srvUserObj.db.runCommand(cmd);
+        const res = srvUserObj.db.runCommand(cmd);
         if (!res.ok) {
           _logger.err(title, res.errmsg);
           return;
@@ -140,12 +140,12 @@ ${srvUserObj.db._name}.${srvUserObj.user}
         granting.forEach(_ => _logger.info(title, `· ${_}`));
       }
     };
-    const _deployGrantedUser = async () => {
-      await _loadServerUser();
+    const _deployGrantedUser = () => {
+      _loadServerUser();
       if (!srvUserObj) return;
       return _deployGrantedRoles();
     };
-    const _deployRevokedRoles = async () => {
+    const _deployRevokedRoles = () => {
       const title = `RevokeRoles`;
       const cmd = {
         revokeRolesFromUser: srvUserObj.user,
@@ -154,7 +154,7 @@ ${srvUserObj.db._name}.${srvUserObj.user}
       const revoking = srvUserObj.roles.filter(_ => !userObj.roles.map(Object.valueOf).includes(_.valueOf()));
       if (revoking.length > 0) {
         cmd.roles = revoking.map($Role.getRef);
-        const res = await srvUserObj.db.runCommand(cmd);
+        const res = srvUserObj.db.runCommand(cmd);
         if (!res.ok) {
           _logger.err(title, res.errmsg);
           return;
@@ -163,8 +163,8 @@ ${srvUserObj.db._name}.${srvUserObj.user}
         revoking.forEach(_ => _logger.info(title, `· ${_}`));
       }
     };
-    const _deployRevokedUser = async () => {
-      await _loadServerUser();
+    const _deployRevokedUser = () => {
+      _loadServerUser();
       if (!srvUserObj) return;
       return _deployRevokedRoles();
     };
@@ -181,9 +181,9 @@ ${srvUserObj.db._name}.${srvUserObj.user}
       passwd = input;
       _logger.info(title, `Password updated.`);
     };
-    const _deploy = async () => {
+    const _deploy = () => {
       const title = `CreateUser`;
-      await _loadServerUser();
+      _loadServerUser();
       if (!srvUserObj) {
         if (!passwd) {
           _setPassword();
@@ -194,23 +194,23 @@ ${srvUserObj.db._name}.${srvUserObj.user}
           roles     : userObj.roles.map($Role.getRef).filter(Boolean),
           writeConcern: {w: `majority`},
         };
-        const res = await userObj.db.runCommand(cmd);
+        const res = userObj.db.runCommand(cmd);
         if (!res.ok) {
           _logger.err(title, res.errmsg);
           return;
         }
         _logger.info(title, `[${cmd.createUser}] user created`);
       }
-      const tasks = [_deployGrantedUser(), _deployRevokedUser()];
-      await Promise.allSettled(tasks);
+      _deployGrantedUser();
+      _deployRevokedUser();
     };
-    const _drop = async (confirm) => {
+    const _drop = (confirm) => {
       const title = `DropUser`;
       if (userObj.user != confirm) {
         _logger.err(title, `Please confirm that you want to drop [${userObj.user}] user`)
         return;
       }
-      await _loadServerUser();
+      _loadServerUser();
       if (srvUserObj == null) {
         _logger.warn(title, `Cannot confirm user's status on server. Aborting...`);
         return;
@@ -219,7 +219,7 @@ ${srvUserObj.db._name}.${srvUserObj.user}
         dropUser: userObj.user,
         writeConcern: {w: `majority`},
       };
-      const res = await userObj.db.runCommand(cmd);
+      const res = userObj.db.runCommand(cmd);
       if (!res.ok) {
         _logger.err(title, res.errmsg);
         return;
@@ -249,20 +249,20 @@ ${srvUserObj.db._name}.${srvUserObj.user}
       enumerable: true,
     };
     Object.defineProperties(this, {
-      [util.inspect.custom] : Object.assign({value: function () { return _toString  (...arguments) }}, _descriptor),
-      toString              : Object.assign({value: function () { return _toString  (...arguments) }}, _descriptor),
-      valueOf               : Object.assign({value: function () { return _valueOf   (...arguments) }}, _descriptor),
-      getRaw                : Object.assign({value: function () { return _getRaw    (...arguments) }}, _descriptor),
-      getRef                : Object.assign({value: function () { return _getRef    (...arguments) }}, _descriptor),
-      getDef                : Object.assign({value: function () { return _getDef    (...arguments) }}, _descriptor),
-      addRole               : Object.assign({value: function () { return _addRole   (...arguments) }}, _descriptor),
-      removeRole            : Object.assign({value: function () { return _removeRole(...arguments) }}, _descriptor),
-      getSrv                : Object.assign({value: function () { return Object.synthesize(_getSrv            (...arguments)) }}, _descriptor),
-      syncUser              : Object.assign({value: function () { return Object.synthesize(_syncUser          (...arguments)) }}, _descriptor),
-      deploy                : Object.assign({value: function () { return Object.synthesize(_deploy            (...arguments)) }}, _descriptor),
-      drop                  : Object.assign({value: function () { return Object.synthesize(_drop              (...arguments)) }}, _descriptor),
-      deployGrantedUser     : Object.assign({value: function () { return Object.synthesize(_deployGrantedUser (...arguments)) }}, _descriptor),
-      deployRevokedUser     : Object.assign({value: function () { return Object.synthesize(_deployRevokedUser (...arguments)) }}, _descriptor),
+      [util.inspect.custom] : Object.assign({value: function () { return _toString          (...arguments) }}, _descriptor),
+      toString              : Object.assign({value: function () { return _toString          (...arguments) }}, _descriptor),
+      valueOf               : Object.assign({value: function () { return _valueOf           (...arguments) }}, _descriptor),
+      getRaw                : Object.assign({value: function () { return _getRaw            (...arguments) }}, _descriptor),
+      getRef                : Object.assign({value: function () { return _getRef            (...arguments) }}, _descriptor),
+      getDef                : Object.assign({value: function () { return _getDef            (...arguments) }}, _descriptor),
+      getSrv                : Object.assign({value: function () { return _getSrv            (...arguments) }}, _descriptor),
+      syncUser              : Object.assign({value: function () { return _syncUser          (...arguments) }}, _descriptor),
+      deployGrantedUser     : Object.assign({value: function () { return _deployGrantedUser (...arguments) }}, _descriptor),
+      deployRevokedUser     : Object.assign({value: function () { return _deployRevokedUser (...arguments) }}, _descriptor),
+      deploy                : Object.assign({value: function () { return _deploy            (...arguments) }}, _descriptor),
+      drop                  : Object.assign({value: function () { return _drop              (...arguments) }}, _descriptor),
+      addRole               : Object.assign({value: function () { return _addRole           (...arguments) }}, _descriptor),
+      removeRole            : Object.assign({value: function () { return _removeRole        (...arguments) }}, _descriptor),
     });
 
     _genData();

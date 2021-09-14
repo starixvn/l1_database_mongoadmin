@@ -7,11 +7,14 @@
     const exampleConst = 1;
 
     /** Private variable */
-    const exampleVar = 1;
+    let exampleVar = 1;
 
     /** Basic function */
     const _toString = () => {
       return `[$Class]`;
+    };
+    const _valueOf = () => {
+      return ``;
     };
 
     /** Private function */
