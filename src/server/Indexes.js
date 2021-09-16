@@ -1,5 +1,5 @@
 {
-  const $Indexes = function (coll, idxs) {
+  const $Indexes = function (coll, ...idxs) {
     /** Self construct */
     if (!(this instanceof $Indexes)) return new $Indexes(...arguments);
 
