@@ -70,7 +70,7 @@ ${srvIdxsObj.coll._database._name}.${srvIdxsObj.coll._name}
       try {
         srvIdxs = idxsObj.coll.getIndexes().map($Index);
       } catch (e) {
-        _logger.err(title, `[${e.code}-${e.codeName}] · ${e.errmsg}`);
+        _logger.err(title, `[${e.code}-${e.name}] · ${e.errmsg}`);
       }
       const data = {
         coll: coll,

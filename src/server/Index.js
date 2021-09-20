@@ -133,7 +133,7 @@
         }
       }
       catch (e) {
-        _logger.err(title, `[${e.code}-${e.codeName}] · ${e.errmsg}`);
+        _logger.err(title, `[${e.code}-${e.name}] · ${e.errmsg}`);
       }
     };
     const _drop = (coll) => {
@@ -157,7 +157,7 @@
           _logger.err(title, res);
         }
       } catch (e) {
-        _logger.err(title, `[${e.code}-${e.codeName}] · ${e.errmsg}`);
+        _logger.err(title, `[${e.code}-${e.name}] · ${e.errmsg}`);
       }
     };
     const _recreate = (coll) => {
