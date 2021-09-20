@@ -12,7 +12,7 @@ docker network create --subnet '172.39.0.0/19' luminet_internal_network
 ```
 Also, we must specify the port that the mongo instance will serve in `.env` file
 ```env
-MONGOD_PORT=27101
+MONGOD_PORT=17104
 ```
 
 ### Deployment
@@ -34,7 +34,7 @@ On the first deployment, we must config replica set for this instance. After aut
     ```javascript
     conf = rs.config()
     conf.version++
-    conf.member[0].host = '10.10.50.1x:17104'
+    conf.members[0].host = '10.10.50.1x:17104'
     conf.settings.electionTimeoutMillis = 3000
     ```
 - Check config
