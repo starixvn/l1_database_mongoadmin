@@ -34,3 +34,4 @@ packages/
 #Project ignore
 .storage/
 secrets/
+__Pandora__/

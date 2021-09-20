@@ -12,7 +12,7 @@ services:
       mongo_internal:
         ipv4_address: 172.39.20.68
     ports:
-      - '0.0.0.0:17104:17104'
+      - '0.0.0.0:${MONGOD_PORT}:${MONGOD_PORT}'
     environment:
       MONGO_INITDB_ROOT_USERNAME: 'root'
       MONGO_INITDB_ROOT_PASSWORD: '-'
@@ -22,7 +22,7 @@ services:
       - ./.storage/mongodb/log:/data/db/.log:rw
     secrets:
       - keyFile
-    command: --config /etc/mongod.conf --replSet AdminAPI --auth
+    command: --config /etc/mongod.conf --port ${MONGOD_PORT} --replSet AdminAPI --auth
     security_opt:
       - seccomp=unconfined
 
