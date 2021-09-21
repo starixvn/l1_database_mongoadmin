@@ -115,8 +115,8 @@ ${srvIdxsObj.coll._database._name}.${srvIdxsObj.coll._name}
       _loadServerIndexes();
     };
     const _deploy = () => {
-      _create();
       _drop();
+      _create();
     };
     const _recreate = () => {
       _loadServerIndexes();
