@@ -64,7 +64,7 @@
         const mandatory = thisObj.sch[key].mandatory ? '!' : ' ';
         let schema = _getSchemaString(thisObj.sch[key].value);
         _logger.verbose(`Test ${key.padEnd(keyLen)}`, `[${mandatory}] - ${schema}`);
-        _logger.verbose(`Test ${key.padEnd(keyLen)}`, `      » ${JSON.stringify(obj[key])}`);
+        _logger.verbose(`Test ${key.padEnd(keyLen)}`, `      » ${util.inspect(obj[key])}`);
       }
     };
     const _testFieldSchemaArray = function (sch) {
@@ -99,6 +99,10 @@
       if ((!this.sch[key].mandatory) && util.isNullOrUndefined(this.obj[key])) {
         return this.result.value &= 1;
       }
+      /** [OK] Matched any type */
+      if (this.sch[key].value == "") {
+        return this.result.value &= 1;
+      }
       /** [OK] Matched defined type */
       if (util.isString(this.sch[key].value) && (typeof this.obj[key] == this.sch[key].value)) {
         return this.result.value &= 1;
@@ -131,7 +135,7 @@
     };
     const _test = (obj) => {
       if ((!util.isObject(obj)) && (!util.isFunction(obj))) return false;
-      return _testSchema(obj, schObj);
+      return [obj].flat(Infinity).every(_ => _testSchema(_, schObj));
     };
 
     const _descriptor = {
@@ -166,8 +170,12 @@
 
   /** Define deploy object */
   const _id = `$Schema`;
-  const version = `0.2.0`;
+  const version = `0.2.1`;
   const changelog = {
+    '0.2.1': [
+      `[${_id}] - Add empty schema condition: default true`,
+      `[${_id}] - Convert input to array to cover array input`,
+    ],
     '0.2.0': [
       `Release [${_id}]`,
     ],
