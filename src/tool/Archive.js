@@ -147,5 +147,5 @@
 }`);
 
   /** Deploy */
-  $Deploy(`BIZ`).run(_id, version, changelog, value);
+  $Deploy(`TOOL`).run(_id, version, changelog, value);
 }
