@@ -17,8 +17,8 @@
     const arcOptsSchema = $Schema({
       '!timeField'  : "string",
       '!cutOffTime' : Date,
-      '!updateOnly' : "boolean",
-      '!filter'     : "object",
+      'updateOnly'  : "boolean",
+      'filter'      : "object",
       'logField'    : "string",
       'logValue'    : "string",
     });
@@ -28,8 +28,8 @@
       '!toColl'     : "Collection",
       '!joinParent' : "string",
       '!joinChild'  : "string",
-      '!updateOnly' : "boolean",
-      '!filter'     : "object",
+      'updateOnly'  : "boolean",
+      'filter'      : "object",
       'logField'    : "string",
       'logValue'    : "string",
     });

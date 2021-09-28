@@ -24,8 +24,8 @@
     const _paint = (title, message, type, color) => {
       const d  = _now();
       const t  = ((typeof type != "string") ? 'V' : type.trim().substr(0,1)).toUpperCase().padEnd(3);
-      const tt = (typeof title != "string") ? ' ' : title;
-      const m  = (typeof message != "string") ? JSON.stringify(message) : message;
+      const tt = (typeof title != "string") ? util.inspect(title) : title;
+      const m  = (typeof message != "string") ? util.inspect(message) : message;
 
       const msg = `${d}${t}${_label} [${tt}] • ${m}`;
       print(msg);
@@ -87,8 +87,11 @@
 
   /** Define deploy object */
   const _id = `$Log`;
-  const version = `0.2.0`;
+  const version = `0.2.1`;
   const changelog = {
+    '0.2.1': [
+      `[${_id}] Handle non-string input`,
+    ],
     '0.2.0': [
       `Release [${_id}]`,
     ],
