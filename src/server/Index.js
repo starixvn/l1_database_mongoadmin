@@ -81,15 +81,16 @@
       }
 
       let name = `IX`;
+      const collName = coll?.constructor?.name == "Collection" ? coll.getName() : null;
       if (idxObj.unique) {
         name = `U${name}`;
       }
       if (idxObj.partialFilterExpression) {
         name = `F${name}`;
       }
-      name = [name, coll?._name, Object.keys(idxObj.key).join('_')].filter(Boolean).join(`_`);
+      name = [name, collName, Object.keys(idxObj.key).join('_')].filter(Boolean).join(`_`);
       if (idxObj.expireAfterSeconds) {
-        name =  [`TTL`, coll?._name].filter(Boolean).join(`_`);
+        name =  [`TTL`, collName].filter(Boolean).join(`_`);
       }
       const collate = idxObj.collation.getSimple();
       if (collate.locale != "simple") {
@@ -117,16 +118,16 @@
       }
       const idx = _getDef(coll);
       const cmd = {
-        createIndexes : coll._name,
+        createIndexes : coll.getName(),
         indexes       : [idx],
       };
       try {
         const res = coll.runCommand(cmd);
         if (res.createdCollectionAutomatically) {
-          _logger.warn(title, `Collection [${coll._name}] does NOT exist. Created.`);
+          _logger.warn(title, `Collection [${coll.getName()}] does NOT exist. Created.`);
         }
         if (res.numIndexesAfter - res.numIndexesBefore) {
-          _logger.info(title, `Index [${coll._name}].[${idx.name}] created.`);
+          _logger.info(title, `Index [${coll.getName()}].[${idx.name}] created.`);
         }
         if (!res.ok) {
           _logger.err(title, res);
@@ -145,13 +146,13 @@
       }
       const idx = idxObj.name;
       const cmd = {
-        dropIndexes : coll._name,
+        dropIndexes : coll.getName(),
         index       : idx,
       };
       try {
         const res = coll.runCommand(cmd);
         if (res.ok) {
-          _logger.info(title, `Index [${coll._name}].[${idx}] dropped.`);
+          _logger.info(title, `Index [${coll.getName()}].[${idx}] dropped.`);
         }
         if (!res.ok) {
           _logger.err(title, res);
@@ -217,8 +218,11 @@
 
   /** Define deploy object */
   const _id = `$Index`;
-  const version = `0.2.0`;
+  const version = `0.2.1`;
   const changelog = {
+    '0.2.1': [
+      `[${_id}] Remove usage of internal field, using supported methods instead`,
+    ],
     '0.2.0': [
       `Release [${_id}]`,
     ],

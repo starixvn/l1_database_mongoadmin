@@ -23,14 +23,14 @@
       if (!roleObj) {
         return `Invalid [$Role]`;
       }
-      return `[$Role] ${roleObj.db._name}.${roleObj.role}`;
+      return `[$Role] ${roleObj.db.getName()}.${roleObj.role}`;
     };
     const _valueOf = () => {
       if (!srvRoleObj) {
         return null;
       }
       return `\
-${srvRoleObj.db._name}.${srvRoleObj.role}
+${srvRoleObj.db.getName()}.${srvRoleObj.role}
 (${srvRoleObj.roles.map(Object.valueOf).sort().join(', ')})
 (${srvRoleObj.privileges.map(Object.valueOf).sort().join(', ')})`;
     };
@@ -72,7 +72,7 @@ ${srvRoleObj.db._name}.${srvRoleObj.role}
     const _getRef = () => {
       if (!roleObj) return null;
       return {
-        db  : roleObj.db._name,
+        db  : roleObj.db.getName(),
         role: roleObj.role,
       };
     };
@@ -375,8 +375,11 @@ ${srvRoleObj.db._name}.${srvRoleObj.role}
 
   /** Define deploy object */
   const _id = `$Role`;
-  const version = `0.2.0`;
+  const version = `0.2.1`;
   const changelog = {
+    '0.2.1': [
+      `[${_id}] Remove usage of internal field, using supported methods instead`,
+    ],
     '0.2.0': [
       `Release [${_id}]`,
     ],

@@ -85,13 +85,13 @@ ${resName}
       switch (resource?.constructor?.name) {
         case "Collection":
           _resource = {
-            db        : resource._database._name,
-            collection: resource._name,
+            db        : resource.getDB().getName(),
+            collection: resource.getName(),
           };
           break;
         case "Database":
           _resource = {
-            db        : resource._name,
+            db        : resource.getName(),
             collection: '',
           };
           break;
@@ -179,6 +179,9 @@ ${resName}
   const _id = `$Privilege`;
   const version = `0.2.1`;
   const changelog = {
+    '0.2.1': [
+      `[${_id}] Remove usage of internal field, using supported methods instead`,
+    ],
     '0.2.0': [
       `Release [${_id}]`,
     ],

@@ -20,14 +20,14 @@
       if (!idxsObj) {
         return `Invalid [$Indexes]`;
       }
-      return `[$Indexes] ${idxsObj.coll._database._name}.${idxsObj.coll._name}`;
+      return `[$Indexes] ${idxsObj.coll.getDB().getName()}.${idxsObj.coll.getName()}`;
     };
     const _valueOf = () => {
       if (!srvIdxsObj) {
         return null;
       }
       return `\
-${srvIdxsObj.coll._database._name}.${srvIdxsObj.coll._name}
+${srvIdxsObj.coll.getDB().getName()}.${srvIdxsObj.coll.getName()}
 (${srvIdxsObj.idxs.map(Object.valueOf).sort().join(', ')})`;
     };
 
@@ -186,8 +186,11 @@ ${srvIdxsObj.coll._database._name}.${srvIdxsObj.coll._name}
 
   /** Define deploy object */
   const _id = `$Indexes`;
-  const version = `0.2.0`;
+  const version = `0.2.1`;
   const changelog = {
+    '0.2.1': [
+      `[${_id}] Remove usage of internal field, using supported methods instead`,
+    ],
     '0.2.0': [
       `Release [${_id}]`,
     ],

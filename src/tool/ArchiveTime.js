@@ -111,10 +111,10 @@
       if (err?.constructor?.name == "MongoBulkWriteError") {
         const errList = err.writeErrors.reduce(_reduceWriteError, {});
         for (const code in errList) {
-          logger.err(from._name, `- ${msg}: E${code} - ${errList[code]} ops`);
+          logger.err(from.getName(), `- ${msg}: E${code} - ${errList[code]} ops`);
         }
       } else {
-        logger.err(from._name, `- ${msg}: ${err.code} - ${err.errmsg}`);
+        logger.err(from.getName(), `- ${msg}: ${err.code} - ${err.errmsg}`);
       }
     };
     const _getTimeField = (doc, options) => {
@@ -162,11 +162,11 @@
       const statusValue = to.find({}, projection).sort(sort).limit(1).toArray()[0];
 
       /** Update status value to archive_statuses */
-      const name = from._name.replace(options.logField, '');
+      const name = from.getName().replace(options.logField, '');
       const set = {
         [`lastArcId.${options.logField}`] : Number((statusValue || defaultValue)[options.logValue]),
       };
-      from._db.archive_statuses.updateOne(
+      from.getDB().archive_statuses.updateOne(
         {name},
         {$set: set},
         {upsert: true},
@@ -194,7 +194,7 @@
         ids[field] = [];
       }
 
-      logger.info(from._name, `- Archiving ${insPipe.length} documents.`);
+      logger.info(from.getName(), `- Archiving ${insPipe.length} documents.`);
 
       /** Processing insert pipe
        *  • Insert documents to destination collection
@@ -204,7 +204,7 @@
         try {
           to.bulkWrite(insPipe, {ordered: false});
         } catch (e) {
-          _handleBulkWriteError(e, `Insert to ${to._name}`);
+          _handleBulkWriteError(e, `Insert to ${to.getName()}`);
         }
       }
       insPipe = [];
@@ -215,7 +215,7 @@
       try {
         from.bulkWrite(updPipe, {ordered: false})
       } catch(e) {
-        _handleBulkWriteError(e, `Update to ${from._name}`);
+        _handleBulkWriteError(e, `Update to ${from.getName()}`);
       }
       updPipe = [];
 
@@ -249,7 +249,7 @@
        *  • 
        */
 
-      logger.info(from._name, `CutOffTime: ${arcOpts.cutOffTime.toISOString()}`);
+      logger.info(from.getName(), `CutOffTime: ${arcOpts.cutOffTime.toISOString()}`);
 
       /** Building ids object */
       _buildIds(childOpts);
@@ -261,7 +261,7 @@
         _executeServerOperation(arcOpts, childOpts);
       }
 
-      logger.info(from._name, `Finished.`);
+      logger.info(from.getName(), `Finished.`);
     }
 
     const _descriptor = {
@@ -293,8 +293,11 @@
 
   /** Define deploy object */
   const _id = `$ArchiveTime`;
-  const version = `1.0.0`;
+  const version = `1.0.1`;
   const changelog = {
+    '1.0.1': [
+      `[${_id}] Remove usage of internal field, using supported methods instead`,
+    ],
     '1.0.0': [
       `Release [${_id}]`,
     ],

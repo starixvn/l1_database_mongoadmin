@@ -22,12 +22,12 @@
       if (!userObj) {
         return `Invalid [$User]`;
       }
-      return `[$User] ${userObj.db._name}.${userObj.user}`;
+      return `[$User] ${userObj.db.getName()}.${userObj.user}`;
     };
     const _valueOf = () => {
       if (!srvUserObj) return null;
       return `\
-${srvUserObj.db._name}.${srvUserObj.user}
+${srvUserObj.db.getName()}.${srvUserObj.user}
 (${srvUserObj.roles.sort().join(', ')})`;
     };
 
@@ -65,14 +65,14 @@ ${srvUserObj.db._name}.${srvUserObj.user}
       if (!userObj) return null;
       return {
         user: userObj.user,
-        db  : userObj.db._name,
+        db  : userObj.db.getName(),
       };
     };
     const _getDef = () => {
       if (!userObj) return null;
       return {
         user  : userObj.user,
-        db    : userObj.db._name,
+        db    : userObj.db.getName(),
         roles : userObj.roles.map($Role.getRef).filter(Boolean),
       };
     };
@@ -317,8 +317,11 @@ ${srvUserObj.db._name}.${srvUserObj.user}
 
   /** Define deploy object */
   const _id = `$User`;
-  const version = `0.2.0`;
+  const version = `0.2.1`;
   const changelog = {
+    '0.2.1': [
+      `[${_id}] Remove usage of internal field, using supported methods instead`,
+    ],
     '0.2.0': [
       `Release [${_id}]`,
     ],
