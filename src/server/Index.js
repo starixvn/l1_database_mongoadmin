@@ -195,8 +195,8 @@
         }
         return null;
       },
-      is$Index: (obj) => {
-        return $Schema({'!data': $Index}).test({data: obj});
+      is$Index: function () {
+        return $Schema($Index).test(...arguments);
       },
     };
   };

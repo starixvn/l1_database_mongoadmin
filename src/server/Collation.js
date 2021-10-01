@@ -95,8 +95,8 @@
         }
         return null;
       },
-      is$Collation: (obj) => {
-        return $Schema({'!data': $Collation}).test({data: obj});
+      is$Collation: function () {
+        return $Schema($Collation).test(...arguments);
       },
     };
   };

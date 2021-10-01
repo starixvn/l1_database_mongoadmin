@@ -289,8 +289,8 @@ ${srvUserObj.db.getName()}.${srvUserObj.user}
         }
         return null;
       },
-      is$User: (obj) => {
-        return $Schema({'!data': $User}).test({data: obj});
+      is$User: function () {
+        return $Schema($User).test(...arguments);
       },
     };
   };

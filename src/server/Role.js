@@ -345,8 +345,8 @@ ${srvRoleObj.db.getName()}.${srvRoleObj.role}
         }
         return null;
       },
-      is$Role: (obj) => {
-        return $Schema({'!data': $Role}).test({data: obj});
+      is$Role: function () {
+        return $Schema($Role).test(...arguments);
       },
     };
   };

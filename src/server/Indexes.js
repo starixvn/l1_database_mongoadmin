@@ -162,8 +162,8 @@ ${srvIdxsObj.coll.getDB().getName()}.${srvIdxsObj.coll.getName()}
         }
         return null;
       },
-      is$Indexes: (obj) => {
-        return $Schema({'!data': $Indexes}).test({data: obj});
+      is$Indexes: function () {
+        return $Schema($Indexes).test(...arguments);
       },
     };
   };

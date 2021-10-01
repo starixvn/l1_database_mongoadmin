@@ -157,8 +157,8 @@ ${resName}
         }
         return null;
       },
-      is$Privilege: (obj) => {
-        return $Schema({'!data': $Privilege}).test({data: obj});
+      is$Privilege: function () {
+        return $Schema($Privilege).test(...arguments);
       },
     };
   };

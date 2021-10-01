@@ -3,7 +3,7 @@
     /** Self construct */
     if (!(this instanceof $ArchiveTime)) return new $ArchiveTime(...arguments);
 
-    const logger = $Log(`ARCHIVE-TIME`);
+    const logger = $Log(`ARC-TIME`);
     if (from?.constructor?.name != "Collection") {
       logger.err(`Audit`, `[from] must be a Mongo collection`);
       return null;

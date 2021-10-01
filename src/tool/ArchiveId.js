@@ -3,7 +3,7 @@
     /** Self construct */
     if (!(this instanceof $ArchiveId)) return new $ArchiveId(...arguments);
 
-    const logger = $Log(`ARCHIVE-ID  `);
+    const logger = $Log(`ARC-ID  `);
     if (from?.constructor?.name != "Collection") {
       logger.err(`Audit`, `[from] must be a Mongo collection`);
       return null;

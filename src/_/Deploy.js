@@ -17,7 +17,7 @@
     const _log = (label, title, message, type, newline) => {
       const d  = ISODate().toISOString().padEnd(29);
       const t  = ((typeof type != "string") ? 'V' : type.trim().substr(0,1)).toUpperCase().padEnd(3);
-      const l  = label.padEnd(15);
+      const l  = label.padEnd(20);
       const tt = (typeof title != "string") ? ' ' : title;
       const m  = (typeof message != "string") ? tojson(message) : message;
 
@@ -79,8 +79,8 @@
   };
   const $DeployExt = function () {
     return {
-      is$Deploy: (obj) => {
-        return $Schema({'!data': $Deploy}).test({data: obj});
+      is$Deploy: function () {
+        return $Schema($Deploy).test(...arguments);
       },
     };
   };

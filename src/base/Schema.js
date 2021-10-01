@@ -37,7 +37,7 @@
       return obj;
     };
     const _getSchemaObject = () => {
-      return schObj;
+      return schObj.data;
     };
     const _reduceMaxLength = (accumulator, currentValue) => {
       return accumulator > currentValue.length ? accumulator : currentValue.length;
@@ -133,9 +133,11 @@
 
       return !!result.value;
     };
-    const _test = (obj) => {
-      if ((!util.isObject(obj)) && (!util.isFunction(obj))) return false;
-      return [obj].flat(Infinity).every(_ => _testSchema(_, schObj));
+    const _test = (...obj) => {
+      // if ((!util.isObject(obj)) && (!util.isFunction(obj))) return false;
+      // return [obj].flat(Infinity).every(_ => _testSchema(_, schObj));
+      const data = [obj].flat(Infinity);
+      return !!data.length && _testSchema({data}, schObj);
     };
 
     const _descriptor = {
@@ -149,7 +151,7 @@
       test                  : Object.assign({value: function () { return _test            (...arguments) }}, _descriptor),
     });
 
-    schObj = _parseSchemaObject(schema);
+    schObj = _parseSchemaObject({'!data': schema});
     Object.deepFreeze(this);
     return this;
   };
@@ -170,8 +172,11 @@
 
   /** Define deploy object */
   const _id = `$Schema`;
-  const version = `0.2.1`;
+  const version = `0.2.2`;
   const changelog = {
+    '0.2.2': [
+      `[${_id}] - Create master object to simplify testing usage`,
+    ],
     '0.2.1': [
       `[${_id}] - Add empty schema condition: default true`,
       `[${_id}] - Convert input to array to cover array input`,
