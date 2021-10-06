@@ -182,7 +182,7 @@
       fields.forEach(_ => _insertInternalField(conf, _));
     };
     const _toSortedObjectJson = (obj) => {
-      return JSON.stringify(Object.sort(obj));
+      return EJSON.stringify(Object.sort(obj));
     };
     const _getOldSummary = (time, round, conf) => {
       const coll = _getSummaryColl(round);
@@ -209,15 +209,14 @@
       if (res.modifiedCount > 0) {
         logger.info(conf.name.en, `Modified summary record for ${doc.key.currency} ${_parseIsCash(doc.key.isCash)}`);
       }
-
-      const idx = oldSums.indexOf(_toSortedObjectJson(doc.key));
+      const idx = oldSums.indexOf(_toSortedObjectJson(Object.assign({currency: null, isCash: null}, doc.key)));
       if (idx >= 0) {
         oldSums.splice(idx, 1);
       }
     };
     const _processOldSummaryData = (doc, coll, conf) => {
       try {
-        const _doc = eval(`(${doc})`);
+        const _doc = Object.assign({currency: null, isCash: null}, EJSON.parse(doc));
         const res = summary[coll].deleteOne(_doc);
         if (res.deletedCount > 0) {
           logger.warn(conf.name.en, `Deleted summary record for ${_doc.currency} ${_parseIsCash(_doc.isCash)}`);
@@ -228,12 +227,12 @@
         logger.err(conf.name.en, `Something is WRONG while deleting summary record for ${doc}`);
       }
     };
-    const _runConfSummary = (time, round, conf) => {
+    const _runConfSummary = (time, round, conf, force = false) => {
       const _time = _getRoundedTime(time, round);
       const timer = $Timer();
       const coll = _getSummaryColl(round);
 
-      if (!_checkSummaryTime(_time, round)) return;
+      if (!force && !_checkSummaryTime(_time, round)) return;
 
       /** If tickets do not have currency field, insert currency for them */
       _insertInternalData(conf);
@@ -245,17 +244,17 @@
       oldSums.forEach(doc => _processOldSummaryData(doc, coll, conf));
       logger.info(conf.name.en, `Done summarize data in ${timer.getTimerDuration()} ms`);
     };
-    const _runSummary = (time, round) => {
+    const _runSummary = (time, round, force = false) => {
       const _time = _getRoundedTime(time || (Date.now() - _getRoundDuration(round)), round);
-      logger.info(summary, `Summary for ${_getTimeStr(_time, round)} started.`);
-      summary.game_summary_config.find().forEach(conf => _runConfSummary(_time, round, conf));
-      logger.info(summary, `Data summary for ${_getTimeStr(_time, round)} finished.`);
+      logger.info(summary, `Summary for ${round[0].toUpperCase()}-${_getTimeStr(_time, round)} started.`);
+      summary.game_summary_config.find().forEach(conf => _runConfSummary(_time, round, conf, force));
+      logger.info(summary, `Data summary for ${round[0].toUpperCase()}-${_getTimeStr(_time, round)} finished.`);
     };
-    const _runDailySummary = (time) => {
-      return _runSummary(time, 'DAY');
+    const _runDailySummary = (time, force = false) => {
+      return _runSummary(time, 'DAY', force);
     };
-    const _runHourlySummary = (time) => {
-      return _runSummary(time, 'HOUR');
+    const _runHourlySummary = (time, force = false) => {
+      return _runSummary(time, 'HOUR', force);
     };
 
     const _descriptor = {
@@ -289,8 +288,12 @@
 
   /** Define deploy object */
   const _id = `$Summary`;
-  const version = `1.0.0`;
+  const version = `1.0.1`;
   const changelog = {
+    '1.0.1': [
+      `[${_id}] Add force option to bypass time audit`,
+      `[${_id}] Using EJSON.stringify instead of JSON.stringify for BSON compatibility`,
+    ],
     '1.0.0': [
       `Release [${_id}]`,
     ],
