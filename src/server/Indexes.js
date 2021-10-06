@@ -60,9 +60,6 @@ ${srvIdxsObj.coll.getDB().getName()}.${srvIdxsObj.coll.getName()}
     const _getRaw = () => {
       return idxsObj;
     };
-    const _getSrv = () => {
-      return srvIdxsObj;
-    };
     const _loadServerIndexes = () => {
       const title = `SrvIdxs `;
       if (!idxsObj) return;
@@ -72,11 +69,16 @@ ${srvIdxsObj.coll.getDB().getName()}.${srvIdxsObj.coll.getName()}
       } catch (e) {
         _logger.err(title, `[${e.code}-${e.name}] · ${e.errmsg}`);
       }
+      srvIdxs.forEach(_ => _.setDefaultCollation());
       const data = {
         coll: coll,
         idxs: srvIdxs,
       };
       srvIdxsObj = _parseIndexesObj(data);
+    };
+    const _getSrv = () => {
+      _loadServerIndexes();
+      return srvIdxsObj;
     };
     const _syncIndexes = () => {
       const title = `  Sync  `;
@@ -91,23 +93,45 @@ ${srvIdxsObj.coll.getDB().getName()}.${srvIdxsObj.coll.getName()}
       }
       idxsObj = srvIdxsObj;
     };
+    const isDefaultIndex = (idx) => {
+      return util.inspect(idx.getKey()) == util.inspect({_id: 1});
+    };
+    const isNotDefaultIndex = (idx) => {
+      return !isDefaultIndex(idx);
+    };
+    const _setLocalCollation = () => {
+      _loadServerIndexes();
+      const defaultIdx = srvIdxsObj.idxs.filter(isDefaultIndex)[0];
+      const defaultCollate = defaultIdx.getRaw().collation;
+      if (defaultCollate.valueOf() != $Collation().valueOf()) {
+        idxsObj.idxs.forEach(_ => _.setDefaultCollation(defaultCollate));
+      }
+    }
     const _create = () => {
       const title = ` Create `;
-      _loadServerIndexes();
-      const creating = idxsObj.idxs.filter(_ => !srvIdxsObj.idxs.map(Object.valueOf).includes(_.valueOf()));
+      _setLocalCollation();
+
+      const srvIdxValues = srvIdxsObj.idxs.map(Object.valueOf);
+      const creating = idxsObj.idxs.filter(_ => {
+        return !srvIdxValues.includes(_.valueOf());
+      });
       if (creating.length > 0) {
         _logger.info(title, `Creating ${creating.length} indexes on ${util.inspect(idxsObj.coll)}`);
         creating.forEach(_ => _.create(idxsObj.coll));
       }
       _loadServerIndexes();
     };
-    const notDefaultIndex = (idx) => {
-      return util.inspect(idx.getKey()) != util.inspect({_id: 1});
-    };
     const _drop = () => {
       const title = `  Drop  `;
-      _loadServerIndexes();
-      const dropping = srvIdxsObj.idxs.filter(notDefaultIndex).filter(_ => !idxsObj.idxs.map(Object.valueOf).includes(_.valueOf()));
+      _setLocalCollation();
+
+      const idxNames  = idxsObj.idxs.map(_ => _.getDef(idxsObj.coll).name);
+      const idxValues = idxsObj.idxs.map(Object.valueOf);
+      const dropping = srvIdxsObj.idxs.filter(isNotDefaultIndex).filter(_ => {
+        const hasName = idxNames.includes(_.getRaw().name);
+        const hasValue = idxValues.includes(_.valueOf());
+        return !(hasName && hasValue);
+      });
       if (dropping.length > 0) {
         _logger.info(title, `Dropping ${dropping.length} indexes from ${util.inspect(idxsObj.coll)}`);
         dropping.forEach(_ => _.drop(idxsObj.coll));
@@ -120,7 +144,7 @@ ${srvIdxsObj.coll.getDB().getName()}.${srvIdxsObj.coll.getName()}
     };
     const _recreate = () => {
       _loadServerIndexes();
-      srvIdxsObj.idxs.filter(notDefaultIndex).forEach(_ => _.recreate(srvIdxsObj.coll));
+      srvIdxsObj.idxs.filter(isNotDefaultIndex).forEach(_ => _.recreate(srvIdxsObj.coll));
       _loadServerIndexes();
     };
 
@@ -190,6 +214,9 @@ ${srvIdxsObj.coll.getDB().getName()}.${srvIdxsObj.coll.getName()}
   const changelog = {
     '0.2.1': [
       `[${_id}] Remove usage of internal field, using supported methods instead`,
+      `[${_id}] Server indexes will have default collation is simple`,
+      `[${_id}] Local indexes will have default collation is as the same as _id_ index on server`,
+      `[${_id}] Detect dropping indexes based on both name and value`,
     ],
     '0.2.0': [
       `Release [${_id}]`,

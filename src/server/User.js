@@ -123,7 +123,7 @@ ${srvUserObj.db.getName()}.${srvUserObj.user}
       userObj = srvUserObj;
     };
     const _deployGrantedRoles = () => {
-      const title = `GrantRoles`;
+      const title = ` GrantRoles`;
       const cmd = {
         grantRolesToUser: srvUserObj.user,
         writeConcern: {w: `majority`},
@@ -205,7 +205,7 @@ ${srvUserObj.db.getName()}.${srvUserObj.user}
       _deployRevokedUser();
     };
     const _drop = (confirm) => {
-      const title = `DropUser`;
+      const title = `  DropUser`;
       if (userObj.user != confirm) {
         _logger.err(title, `Please confirm that you want to drop [${userObj.user}] user`)
         return;
@@ -229,9 +229,9 @@ ${srvUserObj.db.getName()}.${srvUserObj.user}
     const _addRole = (role) => {
       const _role = $Role(role);
       if (!_role.valueOf()) return;
-      if (userObj.roles.map(Object.valueOf).includes(_role.valueOf())) {
+      if (!userObj.roles.map(Object.valueOf).includes(_role.valueOf())) {
         userObj.roles.push(_role);
-        _logger(`AddRole`, `${_role} added.`);
+        _logger.info(`   AddRole`, `${_role} added.`);
       };
     };
     const _removeRole = (role) => {
@@ -240,7 +240,7 @@ ${srvUserObj.db.getName()}.${srvUserObj.user}
       const idx = userObj.roles.map(Object.valueOf).indexOf(_role.valueOf());
       if (idx > 0) {
         userObj.roles.splice(idx, 1);
-        _logger(`RemoveRole`, `${_role} removed.`);
+        _logger.info(`RemoveRole`, `${_role} removed.`);
       }
     };
 

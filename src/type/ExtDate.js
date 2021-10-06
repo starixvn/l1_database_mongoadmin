@@ -4,7 +4,6 @@
     if (!(this instanceof $ExtDate)) return new $ExtDate(value);
 
     /** Private constant */
-    const _logger = $Log(`EXTENDED-DATE`);
     const _regexp = /^([0-9]{4})-([0-9]{2})-([0-9]{2})([ ]|[T])([0-9]{2}):([0-9]{2}):([0-9]{2})([.][0-9]{0,9})?(Z|[+-]?[0-9]{2}[:]?[0-9]{2})?$/;
 
     /** Private variable */
@@ -32,11 +31,13 @@ ${_parts.subsecond}${_parts.timezone}\
 
     /** Private function */
     const _parse = (value) => {
-      const parsed = _regexp.exec(value);
-      const parts = {};
+      let parsed = _regexp.exec(value);
+      let parts = {};
 
       if (parsed == null) {
-        parts = null;
+        const pEpoch = Date.parse(value);
+        const pValue = new Date(pEpoch).toISOString();
+        parsed = _regexp.exec(pValue);
       }
 
       parts.year      = Number(parsed[1]);
@@ -98,8 +99,11 @@ ${_parts.subsecond}${_parts.timezone}\
 
   /** Define deploy object */
   const _id = `$ExtDate`;
-  const version = `0.2.0`;
+  const version = `0.2.1`;
   const changelog = {
+    '0.2.1': [
+      `[${_id}] Fallback to Date.parse if input does not match with the regexp`,
+    ],
     '0.2.0': [
       `Release [${_id}]`,
     ],

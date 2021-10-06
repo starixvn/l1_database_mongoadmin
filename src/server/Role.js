@@ -139,7 +139,7 @@ ${srvRoleObj.db.getName()}.${srvRoleObj.role}
       }
     };
     const _deployGrantedRoles = () => {
-      const title = `GrantRoles`;
+      const title = ` GrantRoles`;
       const cmd = {
         grantRolesToRole: srvRoleObj.role,
         writeConcern: {w: `majority`},
@@ -157,7 +157,7 @@ ${srvRoleObj.db.getName()}.${srvRoleObj.role}
       }
     };
     const _deployGrantedPrivileges = () => {
-      const title = `GrantPrivileges`;
+      const title = ` GrantPrivileges`;
       const cmd = {
         grantPrivilegesToRole: srvRoleObj.role,
         writeConcern: {w: `majority`},
@@ -245,7 +245,7 @@ ${srvRoleObj.db.getName()}.${srvRoleObj.role}
       _loadServerRole();
     };
     const _drop = (confirm) => {
-      const title = `DropRole`;
+      const title = `  DropRole`;
       if (roleObj.role != confirm) {
         _logger.err(title, `Please confirm that you want to drop [${roleObj.role}] role`)
         return;
@@ -271,7 +271,7 @@ ${srvRoleObj.db.getName()}.${srvRoleObj.role}
       if (!_role.valueOf()) return;
       if (!roleObj.roles.map(Object.valueOf).includes(_role.valueOf())) {
         roleObj.roles.push(_role);
-        _logger(`AddRole`, `${_role} added.`);
+        _logger.info(`   AddRole`, `${_role} added.`);
       };
     };
     const _removeRole = (role) => {
@@ -280,7 +280,7 @@ ${srvRoleObj.db.getName()}.${srvRoleObj.role}
       const idx = roleObj.roles.map(Object.valueOf).indexOf(_role.valueOf());
       if (idx > 0) {
         roleObj.roles.splice(idx, 1);
-        _logger(`RemoveRole`, `${_role} removed.`);
+        _logger.info(`RemoveRole`, `${_role} removed.`);
       }
     };
     const _addPrivilege = (privilege) => {
@@ -288,7 +288,7 @@ ${srvRoleObj.db.getName()}.${srvRoleObj.role}
       if (!_privilege.valueOf()) return;
       if (!roleObj.privileges.map(Object.valueOf).includes(_privilege.valueOf())) {
         roleObj.privileges.push(_privilege);
-        _logger(`AddPrivilege`, `${_privilege} added.`);
+        _logger.info(`   AddPrivilege`, `${_privilege} added.`);
       };
     };
     const _removePrivilege = (privilege) => {
@@ -297,7 +297,7 @@ ${srvRoleObj.db.getName()}.${srvRoleObj.role}
       const idx = roleObj.privileges.map(Object.valueOf).indexOf(_privilege.valueOf());
       if (idx > 0) {
         roleObj.privileges.splice(idx, 1);
-        _logger(`RemovePrivilege`, `${_privilege} removed.`);
+        _logger.info(`RemovePrivilege`, `${_privilege} removed.`);
       }
     };
 
