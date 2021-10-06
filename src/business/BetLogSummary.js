@@ -69,8 +69,8 @@
       const agg = [];
 
       agg.push({$match: {$and: [
-        {'time.request': {$gte: _from.toISOString()}},
-        {'time.request': {$lt: _to.toISOString()}},
+        {ts: {$gte: _from}},
+        {ts: {$lt: _to}},
       ]}});
       agg.push({$project: {_id: 0, data: 1, system: 1}});
       agg.push({$group: {
@@ -126,9 +126,9 @@
     const _processSummaryData = function (doc) {
       const res = destination.updateOne(doc.key, {$set: doc.value}, {upsert: true});
       if (res.upsertedCount > 0) {
-        logger.info(destination.getName(), `- Inserted new summary record for G${doc.key.gameId} ${doc.key.currency} ${_parseSystem(doc.key.system)}`);
+        logger.info(`From ${source.getName()}`, `- Inserted new summary record for G${doc.key.gameId} ${doc.key.currency} ${_parseSystem(doc.key.system)}`);
       } else if (res.modifiedCount > 0) {
-        logger.info(destination.getName(), `- Modified summary record for G${doc.key.gameId} ${doc.key.currency} ${_parseSystem(doc.key.system)}`);
+        logger.info(`From ${source.getName()}`, `- Modified summary record for G${doc.key.gameId} ${doc.key.currency} ${_parseSystem(doc.key.system)}`);
       }
 
       const idx = this.oldSums.indexOf(_toSortedObjectJson(doc.key));
@@ -141,13 +141,13 @@
         const _doc = Object.assign({gameId: null, currency: null, system: null}, EJSON.parse(doc));
         const res = destination.deleteOne(_doc);
         if (res.deletedCount > 0) {
-          logger.warn(destination.getName(), `- Deleted summary record for G${_doc.gameId} ${_doc.currency} ${_parseSystem(_doc.system)}`);
+          logger.warn(`From ${source.getName()}`, `- Deleted summary record for G${_doc.gameId} ${_doc.currency} ${_parseSystem(_doc.system)}`);
         } else {
-          logger.info(destination.getName(), `- No summary record deleted for G${_doc.gameId} ${_doc.currency} ${_parseSystem(_doc.system)}`);
+          logger.info(`From ${source.getName()}`, `- No summary record deleted for G${_doc.gameId} ${_doc.currency} ${_parseSystem(_doc.system)}`);
         }
       } catch (e) {
-        logger.err(destination.getName(), `- Something is WRONG while deleting summary record for ${util.inspect(doc)}`);
-        logger.err(destination.getName(), `    ${util.inspect(e)}`);
+        logger.err(`From ${source.getName()}`, `- Something is WRONG while deleting summary record for ${util.inspect(doc)}`);
+        logger.err(`From ${source.getName()}`, `    ${util.inspect(e)}`);
       }
     };
     const _runSummary = (time) => {
@@ -160,13 +160,13 @@
       const summaries = source.aggregate(agg).toArray();
 
       if (summaries.length > 0) {
-        logger.info(destination.getName(), `Summary for ${_getTimeStr(_time, _round)} started`);
+        logger.info(`From ${source.getName()}`, `Summary for ${_getTimeStr(_time, _round)} started`);
       }
       summaries.forEach(_processSummaryData, {oldSums: oldSums});
 
       oldSums.forEach(_processOldSummaryData);
       if (summaries.length > 0) {
-        logger.info(destination.getName(), `Done summarize data for ${_getTimeStr(_time, _round)} in ${timer.getTimerDuration()} ms`);
+        logger.info(`From ${source.getName()}`, `Done summarize data for ${_getTimeStr(_time, _round)} in ${timer.getTimerDuration()} ms`);
       }
     };
 
@@ -203,8 +203,11 @@
 
   /** Define deploy object */
   const _id = `$BetLogSummary`;
-  const version = `2.0.0`;
+  const version = `2.0.1`;
   const changelog = {
+    '2.0.1': [
+      `[${_id}] Using ts field for better time support than time.request string field`,
+    ],
     '2.0.0': [
       `Release [${_id}]`,
     ],

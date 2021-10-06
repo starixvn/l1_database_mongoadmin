@@ -36,18 +36,18 @@
         ts      : requestTS.toDate(),
         time    : {
           request   : requestTS.toString(),
-          response  : responseTS - requestTS,
-          log       : logTS - requestTS,
+          response  : data.responseTimeStamp == null ? null : responseTS - requestTS,
+          log       : data.logTimeStamp == null ? null : logTS - requestTS,
         },
         data    : {
-          siteId    : data.call.siteId,
-          memberId  : data.call.obCustId,
-          currency  : data.call.currency,
-          gameType  : data.call.gameTypeId,
-          roundId   : data.call.gameRoundId,
-          choiceId  : data.call.choiceId,
-          amount    : Number(data.call.amount),
-          balance   : Number(data.result.balance),
+          siteId    : data.call?.siteId,
+          memberId  : data.call?.obCustId,
+          currency  : data.call?.currency,
+          gameType  : data.call?.gameTypeId,
+          roundId   : data.call?.gameRoundId,
+          choiceId  : data.call?.choiceId,
+          amount    : Number(data.call?.amount),
+          balance   : Number(data.result?.balance),
         },
         system  : data.system || 1,
       } };
@@ -95,6 +95,10 @@
         logger.err(title, err);
       }
     };
+    const _filterOutInvalidData = (obj) => {
+      const doc = obj.updateOne.update.$set.data;
+      return doc.memberId || doc.amount || doc.balance;
+    };
     const _processBetLog = (limit, flag) => {
       const title   = `Process   ${source.getName()}`;
       const _limit  = Number(limit) || 1000;
@@ -107,11 +111,14 @@
       ).sort({_id: 1}).map(_cookBetLog).toArray();
       if (!data.length) return data.length;
 
-      let res = {};
       try {
-        res = destination.bulkWrite(data, {ordered: false});
-        global.res = res;
-        logger.info(title, `D-${res.deletedCount} • I-${res.insertedCount + res.upsertedCount} • M-${res.matchedCount} • U-${res.modifiedCount}`);
+        const _data = data.filter(_filterOutInvalidData);
+        if (_data.length) {
+          const res = destination.bulkWrite(_data, {ordered: false});
+          logger.info(title, `D-${res.deletedCount} • I-${res.insertedCount + res.upsertedCount} • M-${res.matchedCount} • U-${res.modifiedCount}`);
+        } else {
+          logger.warn(title, `No valid data in this batch`);
+        }
       } catch (e) {
         _handleError(title, e);
       }
@@ -156,8 +163,11 @@
 
   /** Define deploy object */
   const _id = `$BetLog`;
-  const version = `2.0.0`;
+  const version = `2.0.1`;
   const changelog = {
+    '2.0.1': [
+      `[${_id}] Handle null data`,
+    ],
     '2.0.0': [
       `Release [${_id}]`,
     ],
