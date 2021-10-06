@@ -147,8 +147,8 @@
     return {
       help: function () {
         return `\
-[$BetLog]
-  .func()
+[$BetLog](source, destination) - Object helper for processing bets log in {source} collection and save result to {destination} collection
+  .processAll(limit, flag) - Process {limit} items in bets log with {flag} value
 `;
       },
     };
@@ -156,9 +156,9 @@
 
   /** Define deploy object */
   const _id = `$BetLog`;
-  const version = `1.0.0`;
+  const version = `2.0.0`;
   const changelog = {
-    '1.0.0': [
+    '2.0.0': [
       `Release [${_id}]`,
     ],
   };

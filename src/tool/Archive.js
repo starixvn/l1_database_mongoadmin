@@ -120,8 +120,8 @@
     return {
       help: function () {
         return `\
-[$Archive]
-  .func()
+[$Archive](from, to, config) - Object helper for running archive data from {from} to {to} Mongo instance with {config} collection
+  .runArchive() - Run archive based on config saved
 `;
       },
     };
@@ -129,9 +129,9 @@
 
   /** Define deploy object */
   const _id = `$Archive`;
-  const version = `1.0.0`;
+  const version = `2.0.0`;
   const changelog = {
-    '1.0.0': [
+    '2.0.0': [
       `Release [${_id}]`,
     ],
   };

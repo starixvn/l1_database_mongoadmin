@@ -194,8 +194,8 @@
     return {
       help: function () {
         return `\
-[$BetLogSummary]
-  .func()
+[$BetLogSummary](source, destination) - Object helper for summary processed bets log in {source} collection and save result in {destination} collection
+  .runSummary(time) - Run summary for the hour that contains {time}
 `;
       },
     };
@@ -203,9 +203,9 @@
 
   /** Define deploy object */
   const _id = `$BetLogSummary`;
-  const version = `1.0.0`;
+  const version = `2.0.0`;
   const changelog = {
-    '1.0.0': [
+    '2.0.0': [
       `Release [${_id}]`,
     ],
   };

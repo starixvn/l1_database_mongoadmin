@@ -90,7 +90,7 @@ ${_parts.subsecond}${_parts.timezone}\
     return {
       help: function () {
         return `\
-[$ExtDate](value) - Extended data type for handling date string
+[$ExtDate](value) - Object helper for representing extended time format
   .toDate() - return built-in Date() object
 `;
       },
@@ -99,12 +99,12 @@ ${_parts.subsecond}${_parts.timezone}\
 
   /** Define deploy object */
   const _id = `$ExtDate`;
-  const version = `0.2.1`;
+  const version = `2.0.1`;
   const changelog = {
-    '0.2.1': [
+    '2.0.1': [
       `[${_id}] Fallback to Date.parse if input does not match with the regexp`,
     ],
-    '0.2.0': [
+    '2.0.0': [
       `Release [${_id}]`,
     ],
   };

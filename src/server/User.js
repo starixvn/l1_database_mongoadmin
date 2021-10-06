@@ -252,17 +252,17 @@ ${srvUserObj.db.getName()}.${srvUserObj.user}
       [util.inspect.custom] : Object.assign({value: function () { return _toString          (...arguments) }}, _descriptor),
       toString              : Object.assign({value: function () { return _toString          (...arguments) }}, _descriptor),
       valueOf               : Object.assign({value: function () { return _valueOf           (...arguments) }}, _descriptor),
-      getRaw                : Object.assign({value: function () { return _getRaw            (...arguments) }}, _descriptor),
-      getRef                : Object.assign({value: function () { return _getRef            (...arguments) }}, _descriptor),
-      getDef                : Object.assign({value: function () { return _getDef            (...arguments) }}, _descriptor),
-      getSrv                : Object.assign({value: function () { return _getSrv            (...arguments) }}, _descriptor),
-      syncUser              : Object.assign({value: function () { return _syncUser          (...arguments) }}, _descriptor),
+      addRole               : Object.assign({value: function () { return _addRole           (...arguments) }}, _descriptor),
+      deploy                : Object.assign({value: function () { return _deploy            (...arguments) }}, _descriptor),
       deployGrantedUser     : Object.assign({value: function () { return _deployGrantedUser (...arguments) }}, _descriptor),
       deployRevokedUser     : Object.assign({value: function () { return _deployRevokedUser (...arguments) }}, _descriptor),
-      deploy                : Object.assign({value: function () { return _deploy            (...arguments) }}, _descriptor),
       drop                  : Object.assign({value: function () { return _drop              (...arguments) }}, _descriptor),
-      addRole               : Object.assign({value: function () { return _addRole           (...arguments) }}, _descriptor),
+      getDef                : Object.assign({value: function () { return _getDef            (...arguments) }}, _descriptor),
+      getRaw                : Object.assign({value: function () { return _getRaw            (...arguments) }}, _descriptor),
+      getRef                : Object.assign({value: function () { return _getRef            (...arguments) }}, _descriptor),
+      getSrv                : Object.assign({value: function () { return _getSrv            (...arguments) }}, _descriptor),
       removeRole            : Object.assign({value: function () { return _removeRole        (...arguments) }}, _descriptor),
+      syncUser              : Object.assign({value: function () { return _syncUser          (...arguments) }}, _descriptor),
     });
 
     _genData();
@@ -299,17 +299,17 @@ ${srvUserObj.db.getName()}.${srvUserObj.user}
       help: function () {
         return `\
 [$User](db, user, roles) - User object helper
-  .getRaw()             - Return raw user object
-  .getRef()             - Return the user object used for reference
-  .getDef()             - Return the user object used for definition
-  .getSrv()             - Return server's user object
-  .syncUser()           - Update local user object to match with server's one
+  .addRole(role)        - Grant role to this user
+  .deploy()             - Deploy all changes in user object to server
   .deployGrantedUser()  - Deploy granted changes in user object to server
   .deployRevokedUser()  - Deploy revoked changes in user object to server
-  .deploy()             - Deploy all changes in user object to server
   .drop(confirm)        - Drop user from server
-  .addRole(role)        - Grant role to this user
+  .getDef()             - Return the user object used for definition
+  .getRaw()             - Return raw user object
+  .getRef()             - Return the user object used for reference
+  .getSrv()             - Return server's user object
   .removeRole(role)     - Revoke role from this user
+  .syncUser()           - Update local user object to match with server's one
 `;
       },
     };
@@ -317,12 +317,12 @@ ${srvUserObj.db.getName()}.${srvUserObj.user}
 
   /** Define deploy object */
   const _id = `$User`;
-  const version = `0.2.1`;
+  const version = `2.0.1`;
   const changelog = {
-    '0.2.1': [
+    '2.0.1': [
       `[${_id}] Remove usage of internal field, using supported methods instead`,
     ],
-    '0.2.0': [
+    '2.0.0': [
       `Release [${_id}]`,
     ],
   };

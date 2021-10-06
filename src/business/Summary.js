@@ -278,9 +278,9 @@
     return {
       help: function () {
         return `\
-[$Summary](mongo, summary) - Run data summary using config data at summary database on mongo server
-  .runDailySummary(time)  - Run daily summary for period that contains time
-  .runHourlySummary(time) - Run hourly summary for period that contains time
+[$Summary](mongo, summary) - Object helper for summary data on {mongo} instance to {summary} database
+  .runDailySummary(time)  - Run daily summary for the day that contains {time}
+  .runHourlySummary(time) - Run hourly summary for the hour that contains {time}
 `;
       },
     };
@@ -288,13 +288,13 @@
 
   /** Define deploy object */
   const _id = `$Summary`;
-  const version = `1.0.1`;
+  const version = `2.0.1`;
   const changelog = {
-    '1.0.1': [
+    '2.0.1': [
       `[${_id}] Add force option to bypass time audit`,
       `[${_id}] Using EJSON.stringify instead of JSON.stringify for BSON compatibility`,
     ],
-    '1.0.0': [
+    '2.0.0': [
       `Release [${_id}]`,
     ],
   };

@@ -156,13 +156,13 @@ ${srvIdxsObj.coll.getDB().getName()}.${srvIdxsObj.coll.getName()}
       [util.inspect.custom] : Object.assign({value: function () { return _toString    (...arguments) }}, _descriptor),
       toString              : Object.assign({value: function () { return _toString    (...arguments) }}, _descriptor),
       valueOf               : Object.assign({value: function () { return _valueOf     (...arguments) }}, _descriptor),
+      create                : Object.assign({value: function () { return _create      (...arguments) }}, _descriptor),
+      deploy                : Object.assign({value: function () { return _deploy      (...arguments) }}, _descriptor),
+      drop                  : Object.assign({value: function () { return _drop        (...arguments) }}, _descriptor),
       getRaw                : Object.assign({value: function () { return _getRaw      (...arguments) }}, _descriptor),
       getSrv                : Object.assign({value: function () { return _getSrv      (...arguments) }}, _descriptor),
-      syncIndexes           : Object.assign({value: function () { return _syncIndexes (...arguments) }}, _descriptor),
-      create                : Object.assign({value: function () { return _create      (...arguments) }}, _descriptor),
-      drop                  : Object.assign({value: function () { return _drop        (...arguments) }}, _descriptor),
-      deploy                : Object.assign({value: function () { return _deploy      (...arguments) }}, _descriptor),
       recreate              : Object.assign({value: function () { return _recreate    (...arguments) }}, _descriptor),
+      syncIndexes           : Object.assign({value: function () { return _syncIndexes (...arguments) }}, _descriptor),
     });
 
     _genData();
@@ -195,14 +195,14 @@ ${srvIdxsObj.coll.getDB().getName()}.${srvIdxsObj.coll.getName()}
     return {
       help: function () {
         return `\
-[$Index](coll, idxs) - Collection indexes object helper
+[$Index](coll, idxs) - Object helper for managing indexes on {coll} collection
+  .create()       - Create new defined indexes on collection
+  .deploy()       - Create new defined and drop old undefined indexes on collection
+  .drop()         - Drop old undefined indexes from collection
   .getRaw()       - Return raw indexes object
   .getSrv()       - Return server indexes object
-  .syncIndexes()  - Update local indexes to matched with server indexes
-  .create()       - Create new defined indexes on collection
-  .drop()         - Drop old undefined indexes from collection
-  .deploy()       - Create new defined and drop old undefined indexes on collection
   .recreate()     - Drop then create every server indexes on collection
+  .syncIndexes()  - Update local indexes to matched with server indexes
 `;
       },
     };
@@ -210,15 +210,15 @@ ${srvIdxsObj.coll.getDB().getName()}.${srvIdxsObj.coll.getName()}
 
   /** Define deploy object */
   const _id = `$Indexes`;
-  const version = `0.2.1`;
+  const version = `2.0.1`;
   const changelog = {
-    '0.2.1': [
+    '2.0.1': [
       `[${_id}] Remove usage of internal field, using supported methods instead`,
       `[${_id}] Server indexes will have default collation is simple`,
       `[${_id}] Local indexes will have default collation is as the same as _id_ index on server`,
       `[${_id}] Detect dropping indexes based on both name and value`,
     ],
-    '0.2.0': [
+    '2.0.0': [
       `Release [${_id}]`,
     ],
   };

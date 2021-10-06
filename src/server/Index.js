@@ -190,11 +190,11 @@
       [util.inspect.custom] : Object.assign({value: function () { return _toString            (...arguments) }}, _descriptor),
       toString              : Object.assign({value: function () { return _toString            (...arguments) }}, _descriptor),
       valueOf               : Object.assign({value: function () { return _valueOf             (...arguments) }}, _descriptor),
-      getRaw                : Object.assign({value: function () { return _getRaw              (...arguments) }}, _descriptor),
-      getDef                : Object.assign({value: function () { return _getDef              (...arguments) }}, _descriptor),
-      getKey                : Object.assign({value: function () { return _getKey              (...arguments) }}, _descriptor),
       create                : Object.assign({value: function () { return _create              (...arguments) }}, _descriptor),
       drop                  : Object.assign({value: function () { return _drop                (...arguments) }}, _descriptor),
+      getDef                : Object.assign({value: function () { return _getDef              (...arguments) }}, _descriptor),
+      getKey                : Object.assign({value: function () { return _getKey              (...arguments) }}, _descriptor),
+      getRaw                : Object.assign({value: function () { return _getRaw              (...arguments) }}, _descriptor),
       recreate              : Object.assign({value: function () { return _recreate            (...arguments) }}, _descriptor),
       setDefaultCollation   : Object.assign({value: function () { return _setDefaultCollation (...arguments) }}, _descriptor),
     });
@@ -227,12 +227,12 @@
     return {
       help: function () {
         return `\
-[$Index](key, opts) - Index object helper
-  .getRaw()                     - Return raw index object
-  .getDef()                     - Return the index object used for definition
-  .getKey()                     - Return the index key
+[$Index](key, opts) - Object helper for managing index
   .create(coll)                 - Create index on collection
   .drop(coll)                   - Drop index from collection
+  .getDef()                     - Return the index object used for definition
+  .getKey()                     - Return the index key
+  .getRaw()                     - Return raw index object
   .recreate(coll)               - Drop then create index on collection
   .setDefaultCollation(collate) - Set index collate if not exist
 `;
@@ -242,9 +242,9 @@
 
   /** Define deploy object */
   const _id = `$Index`;
-  const version = `0.2.1`;
+  const version = `2.0.1`;
   const changelog = {
-    '0.2.1': [
+    '2.0.1': [
       `[${_id}] Remove usage of internal field, using supported methods instead`,
       `[${_id}] Remove default collation, let server decide`,
       `[${_id}] Don't include simple collation in valueOf() result`,
@@ -252,7 +252,7 @@
       `[${_id}] New method setDefaultCollation()`,
       `[${_id}] drop() will prefer using name over key`,
     ],
-    '0.2.0': [
+    '2.0.0': [
       `Release [${_id}]`,
     ],
   };

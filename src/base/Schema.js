@@ -162,9 +162,9 @@
     return {
       help: function () {
         return `\
-[$Schema](schema, verbose) - object type verification
+[$Schema](schema, verbose) - Object helper to verify {schema} definition on objects
   .getSchemaObject()  - return schema object
-  .test(obj)          - check if the obj satisfy the schema
+  .test(obj)          - check if {obj} satisfy the schema
 `;
       },
     };
@@ -172,16 +172,16 @@
 
   /** Define deploy object */
   const _id = `$Schema`;
-  const version = `0.2.2`;
+  const version = `2.0.2`;
   const changelog = {
-    '0.2.2': [
+    '2.0.2': [
       `[${_id}] - Create master object to simplify testing usage`,
     ],
-    '0.2.1': [
+    '2.0.1': [
       `[${_id}] - Add empty schema condition: default true`,
       `[${_id}] - Convert input to array to cover array input`,
     ],
-    '0.2.0': [
+    '2.0.0': [
       `Release [${_id}]`,
     ],
   };

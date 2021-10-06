@@ -104,7 +104,7 @@
     return {
       help: function () {
         return `\
-[$Collation](collation) - Collation helper
+[$Collation](collation) - Object helper for representing a {collation}
   .getFull()    - return full collation object
   .getSimple()  - return minimal collation object
 `;
@@ -147,9 +147,9 @@
 
   /** Define deploy object */
   const _id = `$Collation`;
-  const version = `0.2.0`;
+  const version = `2.0.0`;
   const changelog = {
-    '0.2.0': [
+    '2.0.0': [
       `Release [${_id}]`,
     ],
   };

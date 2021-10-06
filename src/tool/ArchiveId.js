@@ -238,8 +238,8 @@
     return {
       help: function () {
         return `\
-[$ArchiveId]
-  .func()
+[$ArchiveId](from, to, dataOptions, archiveOptions) - Object helper for archiving data from {from} to {to} collection
+  .runArchive() - Run archive based on input configs
 `;
       },
     };
@@ -247,12 +247,12 @@
 
   /** Define deploy object */
   const _id = `$ArchiveId`;
-  const version = `1.0.1`;
+  const version = `2.0.1`;
   const changelog = {
-    '1.0.1': [
+    '2.0.1': [
       `[${_id}] Remove usage of internal field, using supported methods instead`,
     ],
-    '1.0.0': [
+    '2.0.0': [
       `Release [${_id}]`,
     ],
   };

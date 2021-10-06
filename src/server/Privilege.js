@@ -129,9 +129,9 @@ ${resName}
       [util.inspect.custom] : Object.assign({value: function () { return _toString(...arguments) }}, _descriptor),
       toString              : Object.assign({value: function () { return _toString(...arguments) }}, _descriptor),
       valueOf               : Object.assign({value: function () { return _valueOf (...arguments) }}, _descriptor),
+      getDef                : Object.assign({value: function () { return _getDef  (...arguments) }}, _descriptor),
       getRaw                : Object.assign({value: function () { return _getRaw  (...arguments) }}, _descriptor),
       getRef                : Object.assign({value: function () { return _getRef  (...arguments) }}, _descriptor),
-      getDef                : Object.assign({value: function () { return _getDef  (...arguments) }}, _descriptor),
     });
 
     _genData();
@@ -166,10 +166,10 @@ ${resName}
     return {
       help: function () {
         return `\
-[$Privilege](resource, ...actions) - Privilege object helper
+[$Privilege](resource, ...actions) - Object helper for representing a privilege
+  .getDef() - Return the privilege object used for definition
   .getRaw() - Return raw privilege object
   .getRef() - Return the privilege object used for reference
-  .getDef() - Return the privilege object used for definition
 `;
       },
     };
@@ -177,12 +177,12 @@ ${resName}
 
   /** Define deploy object */
   const _id = `$Privilege`;
-  const version = `0.2.1`;
+  const version = `2.0.1`;
   const changelog = {
-    '0.2.1': [
+    '2.0.1': [
       `[${_id}] Remove usage of internal field, using supported methods instead`,
     ],
-    '0.2.0': [
+    '2.0.0': [
       `Release [${_id}]`,
     ],
   };
