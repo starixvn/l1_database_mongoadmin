@@ -24,8 +24,8 @@
     const _paint = (title, message, type, color) => {
       const d  = _now();
       const t  = ((typeof type != "string") ? 'V' : type.trim().substr(0,1)).toUpperCase().padEnd(3);
-      const tt = (typeof title != "string") ? ' ' : title;
-      const m  = (typeof message != "string") ? JSON.stringify(message) : message;
+      const tt = (typeof title != "string") ? util.inspect(title) : title;
+      const m  = (typeof message != "string") ? util.inspect(message) : message;
 
       const msg = `${d}${t}${_label} [${tt}] • ${m}`;
       print(msg);
@@ -54,12 +54,12 @@
     Object.defineProperties(this, {
       [util.inspect.custom] : Object.assign({value: function () { return _toString(...arguments) }}, _descriptor),
       toString              : Object.assign({value: function () { return _toString(...arguments) }}, _descriptor),
+      err                   : Object.assign({value: function () { return _err     (...arguments) }}, _descriptor),
+      info                  : Object.assign({value: function () { return _info    (...arguments) }}, _descriptor),
       getLabel              : Object.assign({value: function () { return _getLabel(...arguments) }}, _descriptor),
       setLabel              : Object.assign({value: function () { return _setLabel(...arguments) }}, _descriptor),
       verbose               : Object.assign({value: function () { return _verbose (...arguments) }}, _descriptor),
-      info                  : Object.assign({value: function () { return _info    (...arguments) }}, _descriptor),
       warn                  : Object.assign({value: function () { return _warn    (...arguments) }}, _descriptor),
-      err                   : Object.assign({value: function () { return _err     (...arguments) }}, _descriptor),
     });
 
     _setLabel(label);
@@ -73,13 +73,13 @@
     return {
       help: function () {
         return `\
-[$Log](label) - Write log message
+[$Log](label) - Object helper for writing log message
+  .err(title, message)      - write error message
+  .info(title, message)     - write infomation message
   .getLabel()               - return log's label
   .setLabel(label)          - update log's label
   .verbose(title, message)  - write verbose message
-  .info(title, message)     - write infomation message
   .warn(title, message)     - write warning message
-  .err(title, message)      - write error message
 `;
       },
     };
@@ -87,9 +87,12 @@
 
   /** Define deploy object */
   const _id = `$Log`;
-  const version = `0.2.0`;
+  const version = `2.0.1`;
   const changelog = {
-    '0.2.0': [
+    '2.0.1': [
+      `[${_id}] Handle non-string input`,
+    ],
+    '2.0.0': [
       `Release [${_id}]`,
     ],
   };

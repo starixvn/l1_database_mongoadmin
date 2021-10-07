@@ -39,6 +39,9 @@
     const _valueOf = () => {
       const def = _getDef();
       delete def.name;
+      if ($Collation(def.collation).valueOf() == $Collation().valueOf()) {
+        delete def.collation;
+      }
       return util.inspect(Object.sort(def));
     };
 
@@ -46,7 +49,9 @@
     const _parseIndexObject = (obj) => {
       const title = ` Audit  `;
 
-      obj.collation = $Collation(obj.collation);
+      if (obj.hasOwnProperty(`collation`)) {
+        obj.collation = $Collation(obj.collation);
+      }
 
       if (!indexSchema.test(obj)) {
         _logger.err(title, `Index object is invalid`);
@@ -75,24 +80,28 @@
     const _getRaw = () => {
       return idxObj;
     };
+    const _generateKeysName = (key) => {
+      return Object.keys(key).map(_ => [_, key[_] != 1 ? key[_] : null].filter(Boolean).join('$')).join('_');
+    };
     const _generateIndexName = (coll) => {
       if (util.inspect(idxObj.key) == util.inspect({_id: 1})) {
         return `_id_`;
       }
 
       let name = `IX`;
+      const collName = coll?.constructor?.name == "Collection" ? coll.getName() : null;
       if (idxObj.unique) {
         name = `U${name}`;
       }
       if (idxObj.partialFilterExpression) {
         name = `F${name}`;
       }
-      name = [name, coll?._name, Object.keys(idxObj.key).join('_')].filter(Boolean).join(`_`);
+      name = [name, collName, _generateKeysName(idxObj.key)].filter(Boolean).join(`_`);
       if (idxObj.expireAfterSeconds) {
-        name =  [`TTL`, coll?._name].filter(Boolean).join(`_`);
+        name =  [`TTL`, name].filter(Boolean).join(`_`);
       }
-      const collate = idxObj.collation.getSimple();
-      if (collate.locale != "simple") {
+      if (idxObj.collation) {
+        const collate = idxObj.collation.getSimple();
         name = [name, collate.locale, collate.strength].filter(Boolean).join(`_`);
       }
 
@@ -103,7 +112,9 @@
       if (coll?.constructor?.name == "Collection") {
         data.name = _generateIndexName(coll);
       }
-      data.collation = data.collation.getSimple();
+      if (data.collation) {
+        data.collation = data.collation.getSimple();
+      }
       return data;
     };
     const _getKey = () => {
@@ -117,16 +128,16 @@
       }
       const idx = _getDef(coll);
       const cmd = {
-        createIndexes : coll._name,
+        createIndexes : coll.getName(),
         indexes       : [idx],
       };
       try {
         const res = coll.runCommand(cmd);
         if (res.createdCollectionAutomatically) {
-          _logger.warn(title, `Collection [${coll._name}] does NOT exist. Created.`);
+          _logger.warn(title, `Collection [${coll.getName()}] does NOT exist. Created.`);
         }
         if (res.numIndexesAfter - res.numIndexesBefore) {
-          _logger.info(title, `Index [${coll._name}].[${idx.name}] created.`);
+          _logger.info(title, `Index [${coll.getName()}].[${idx.name}] created.`);
         }
         if (!res.ok) {
           _logger.err(title, res);
@@ -143,15 +154,15 @@
         _logger.err(title, `Invalid collection ${util.inspect(coll)}`);
         return;
       }
-      const idx = idxObj.name;
+      const idx = idxObj.name ?? idxObj.key;
       const cmd = {
-        dropIndexes : coll._name,
+        dropIndexes : coll.getName(),
         index       : idx,
       };
       try {
         const res = coll.runCommand(cmd);
         if (res.ok) {
-          _logger.info(title, `Index [${coll._name}].[${idx}] dropped.`);
+          _logger.info(title, `Index [${coll.getName()}].[${util.inspect(idx)}] dropped.`);
         }
         if (!res.ok) {
           _logger.err(title, res);
@@ -164,21 +175,28 @@
       _drop(coll);
       _create(coll);
     };
+    const _setDefaultCollation = (collate) => {
+      if (!idxObj.collation) {
+        idxObj.collation = collate;
+        idxObj = _parseIndexObject(idxObj);
+      }
+    };
 
     const _descriptor = {
       writable: false,
       enumerable: true,
     };
     Object.defineProperties(this, {
-      [util.inspect.custom] : Object.assign({value: function () { return _toString(...arguments) }}, _descriptor),
-      toString              : Object.assign({value: function () { return _toString(...arguments) }}, _descriptor),
-      valueOf               : Object.assign({value: function () { return _valueOf (...arguments) }}, _descriptor),
-      getRaw                : Object.assign({value: function () { return _getRaw  (...arguments) }}, _descriptor),
-      getDef                : Object.assign({value: function () { return _getDef  (...arguments) }}, _descriptor),
-      getKey                : Object.assign({value: function () { return _getKey  (...arguments) }}, _descriptor),
-      create                : Object.assign({value: function () { return _create  (...arguments) }}, _descriptor),
-      drop                  : Object.assign({value: function () { return _drop    (...arguments) }}, _descriptor),
-      recreate              : Object.assign({value: function () { return _recreate(...arguments) }}, _descriptor),
+      [util.inspect.custom] : Object.assign({value: function () { return _toString            (...arguments) }}, _descriptor),
+      toString              : Object.assign({value: function () { return _toString            (...arguments) }}, _descriptor),
+      valueOf               : Object.assign({value: function () { return _valueOf             (...arguments) }}, _descriptor),
+      create                : Object.assign({value: function () { return _create              (...arguments) }}, _descriptor),
+      drop                  : Object.assign({value: function () { return _drop                (...arguments) }}, _descriptor),
+      getDef                : Object.assign({value: function () { return _getDef              (...arguments) }}, _descriptor),
+      getKey                : Object.assign({value: function () { return _getKey              (...arguments) }}, _descriptor),
+      getRaw                : Object.assign({value: function () { return _getRaw              (...arguments) }}, _descriptor),
+      recreate              : Object.assign({value: function () { return _recreate            (...arguments) }}, _descriptor),
+      setDefaultCollation   : Object.assign({value: function () { return _setDefaultCollation (...arguments) }}, _descriptor),
     });
 
     _genData();
@@ -194,8 +212,14 @@
         }
         return null;
       },
-      is$Index: (obj) => {
-        return $Schema({'!data': $Index}).test({data: obj});
+      getRaw: (obj) => {
+        if ($Index.is$Index(obj)) {
+          return obj.getRaw();
+        }
+        return null;
+      },
+      is$Index: function () {
+        return $Schema($Index).test(...arguments);
       },
     };
   };
@@ -203,13 +227,14 @@
     return {
       help: function () {
         return `\
-[$Index](key, opts) - Index object helper
-  .getRaw()                   - Return raw index object
-  .getDef()                   - Return the index object used for definition
-  .getKey()                   - Return the index key
-  .create(coll)               - Create index on collection
-  .drop(coll)                 - Drop index from collection
-  .recreate(coll)             - Drop then create index on collection
+[$Index](key, opts) - Object helper for managing index
+  .create(coll)                 - Create index on collection
+  .drop(coll)                   - Drop index from collection
+  .getDef()                     - Return the index object used for definition
+  .getKey()                     - Return the index key
+  .getRaw()                     - Return raw index object
+  .recreate(coll)               - Drop then create index on collection
+  .setDefaultCollation(collate) - Set index collate if not exist
 `;
       },
     };
@@ -217,9 +242,17 @@
 
   /** Define deploy object */
   const _id = `$Index`;
-  const version = `0.2.0`;
+  const version = `2.0.1`;
   const changelog = {
-    '0.2.0': [
+    '2.0.1': [
+      `[${_id}] Remove usage of internal field, using supported methods instead`,
+      `[${_id}] Remove default collation, let server decide`,
+      `[${_id}] Don't include simple collation in valueOf() result`,
+      `[${_id}] Include index key value in name if not 1`,
+      `[${_id}] New method setDefaultCollation()`,
+      `[${_id}] drop() will prefer using name over key`,
+    ],
+    '2.0.0': [
       `Release [${_id}]`,
     ],
   };

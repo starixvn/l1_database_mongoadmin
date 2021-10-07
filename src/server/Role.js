@@ -23,14 +23,14 @@
       if (!roleObj) {
         return `Invalid [$Role]`;
       }
-      return `[$Role] ${roleObj.db._name}.${roleObj.role}`;
+      return `[$Role] ${roleObj.db.getName()}.${roleObj.role}`;
     };
     const _valueOf = () => {
       if (!srvRoleObj) {
         return null;
       }
       return `\
-${srvRoleObj.db._name}.${srvRoleObj.role}
+${srvRoleObj.db.getName()}.${srvRoleObj.role}
 (${srvRoleObj.roles.map(Object.valueOf).sort().join(', ')})
 (${srvRoleObj.privileges.map(Object.valueOf).sort().join(', ')})`;
     };
@@ -72,7 +72,7 @@ ${srvRoleObj.db._name}.${srvRoleObj.role}
     const _getRef = () => {
       if (!roleObj) return null;
       return {
-        db  : roleObj.db._name,
+        db  : roleObj.db.getName(),
         role: roleObj.role,
       };
     };
@@ -139,7 +139,7 @@ ${srvRoleObj.db._name}.${srvRoleObj.role}
       }
     };
     const _deployGrantedRoles = () => {
-      const title = `GrantRoles`;
+      const title = ` GrantRoles`;
       const cmd = {
         grantRolesToRole: srvRoleObj.role,
         writeConcern: {w: `majority`},
@@ -157,7 +157,7 @@ ${srvRoleObj.db._name}.${srvRoleObj.role}
       }
     };
     const _deployGrantedPrivileges = () => {
-      const title = `GrantPrivileges`;
+      const title = ` GrantPrivileges`;
       const cmd = {
         grantPrivilegesToRole: srvRoleObj.role,
         writeConcern: {w: `majority`},
@@ -245,7 +245,7 @@ ${srvRoleObj.db._name}.${srvRoleObj.role}
       _loadServerRole();
     };
     const _drop = (confirm) => {
-      const title = `DropRole`;
+      const title = `  DropRole`;
       if (roleObj.role != confirm) {
         _logger.err(title, `Please confirm that you want to drop [${roleObj.role}] role`)
         return;
@@ -271,7 +271,7 @@ ${srvRoleObj.db._name}.${srvRoleObj.role}
       if (!_role.valueOf()) return;
       if (!roleObj.roles.map(Object.valueOf).includes(_role.valueOf())) {
         roleObj.roles.push(_role);
-        _logger(`AddRole`, `${_role} added.`);
+        _logger.info(`   AddRole`, `${_role} added.`);
       };
     };
     const _removeRole = (role) => {
@@ -280,7 +280,7 @@ ${srvRoleObj.db._name}.${srvRoleObj.role}
       const idx = roleObj.roles.map(Object.valueOf).indexOf(_role.valueOf());
       if (idx > 0) {
         roleObj.roles.splice(idx, 1);
-        _logger(`RemoveRole`, `${_role} removed.`);
+        _logger.info(`RemoveRole`, `${_role} removed.`);
       }
     };
     const _addPrivilege = (privilege) => {
@@ -288,7 +288,7 @@ ${srvRoleObj.db._name}.${srvRoleObj.role}
       if (!_privilege.valueOf()) return;
       if (!roleObj.privileges.map(Object.valueOf).includes(_privilege.valueOf())) {
         roleObj.privileges.push(_privilege);
-        _logger(`AddPrivilege`, `${_privilege} added.`);
+        _logger.info(`   AddPrivilege`, `${_privilege} added.`);
       };
     };
     const _removePrivilege = (privilege) => {
@@ -297,7 +297,7 @@ ${srvRoleObj.db._name}.${srvRoleObj.role}
       const idx = roleObj.privileges.map(Object.valueOf).indexOf(_privilege.valueOf());
       if (idx > 0) {
         roleObj.privileges.splice(idx, 1);
-        _logger(`RemovePrivilege`, `${_privilege} removed.`);
+        _logger.info(`RemovePrivilege`, `${_privilege} removed.`);
       }
     };
 
@@ -309,19 +309,19 @@ ${srvRoleObj.db._name}.${srvRoleObj.role}
       [util.inspect.custom] : Object.assign({value: function () { return _toString          (...arguments) }}, _descriptor),
       toString              : Object.assign({value: function () { return _toString          (...arguments) }}, _descriptor),
       valueOf               : Object.assign({value: function () { return _valueOf           (...arguments) }}, _descriptor),
-      getRaw                : Object.assign({value: function () { return _getRaw            (...arguments) }}, _descriptor),
-      getRef                : Object.assign({value: function () { return _getRef            (...arguments) }}, _descriptor),
-      getDef                : Object.assign({value: function () { return _getDef            (...arguments) }}, _descriptor),
-      addRole               : Object.assign({value: function () { return _addRole           (...arguments) }}, _descriptor),
-      removeRole            : Object.assign({value: function () { return _removeRole        (...arguments) }}, _descriptor),
       addPrivilege          : Object.assign({value: function () { return _addPrivilege      (...arguments) }}, _descriptor),
-      removePrivilege       : Object.assign({value: function () { return _removePrivilege   (...arguments) }}, _descriptor),
-      getSrv                : Object.assign({value: function () { return _getSrv            (...arguments) }}, _descriptor),
+      addRole               : Object.assign({value: function () { return _addRole           (...arguments) }}, _descriptor),
       deploy                : Object.assign({value: function () { return _deploy            (...arguments) }}, _descriptor),
-      drop                  : Object.assign({value: function () { return _drop              (...arguments) }}, _descriptor),
-      syncRole              : Object.assign({value: function () { return _syncRole          (...arguments) }}, _descriptor),
       deployGrantedRole     : Object.assign({value: function () { return _deployGrantedRole (...arguments) }}, _descriptor),
       deployRevokedRole     : Object.assign({value: function () { return _deployRevokedRole (...arguments) }}, _descriptor),
+      drop                  : Object.assign({value: function () { return _drop              (...arguments) }}, _descriptor),
+      getDef                : Object.assign({value: function () { return _getDef            (...arguments) }}, _descriptor),
+      getRaw                : Object.assign({value: function () { return _getRaw            (...arguments) }}, _descriptor),
+      getRef                : Object.assign({value: function () { return _getRef            (...arguments) }}, _descriptor),
+      getSrv                : Object.assign({value: function () { return _getSrv            (...arguments) }}, _descriptor),
+      removePrivilege       : Object.assign({value: function () { return _removePrivilege   (...arguments) }}, _descriptor),
+      removeRole            : Object.assign({value: function () { return _removeRole        (...arguments) }}, _descriptor),
+      syncRole              : Object.assign({value: function () { return _syncRole          (...arguments) }}, _descriptor),
     });
 
     _genData();
@@ -345,8 +345,8 @@ ${srvRoleObj.db._name}.${srvRoleObj.role}
         }
         return null;
       },
-      is$Role: (obj) => {
-        return $Schema({'!data': $Role}).test({data: obj});
+      is$Role: function () {
+        return $Schema($Role).test(...arguments);
       },
     };
   };
@@ -354,20 +354,20 @@ ${srvRoleObj.db._name}.${srvRoleObj.role}
     return {
       help: function () {
         return `\
-[$Role](db, role, roles, privileges) - Role object helper
-  .getRaw()                   - Return raw role object
-  .getRef()                   - Return the role object used for reference
-  .getDef()                   - Return the role object used for definition
-  .getSrv()                   - Return server's role object
-  .syncRole()                 - Update local role object to match with server's one
+[$Role](db, role, roles, privileges) - Object helper for managing {role} on {db} database
+  .addPrivilege(privilege)    - Grant privilege to this role
+  .addRole(role)              - Grant role to this role
+  .deploy()                   - Deploy all changes in role object to server
   .deployGrantedRole()        - Deploy granted changes in role object to server
   .deployRevokedRole()        - Deploy revoked changes in role object to server
-  .deploy()                   - Deploy all changes in role object to server
   .drop(confirm)              - Drop role from server
-  .addRole(role)              - Grant role to this role
-  .removeRole(role)           - Revoke role from this role
-  .addPrivilege(privilege)    - Grant privilege to this role
+  .getDef()                   - Return the role object used for definition
+  .getRaw()                   - Return raw role object
+  .getRef()                   - Return the role object used for reference
+  .getSrv()                   - Return server's role object
   .removePrivilege(privilege) - Revoke privilege from this role
+  .removeRole(role)           - Revoke role from this role
+  .syncRole()                 - Update local role object to match with server's one
 `;
       },
     };
@@ -375,9 +375,12 @@ ${srvRoleObj.db._name}.${srvRoleObj.role}
 
   /** Define deploy object */
   const _id = `$Role`;
-  const version = `0.2.0`;
+  const version = `2.0.1`;
   const changelog = {
-    '0.2.0': [
+    '2.0.1': [
+      `[${_id}] Remove usage of internal field, using supported methods instead`,
+    ],
+    '2.0.0': [
       `Release [${_id}]`,
     ],
   };

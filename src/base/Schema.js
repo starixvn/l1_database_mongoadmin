@@ -37,7 +37,7 @@
       return obj;
     };
     const _getSchemaObject = () => {
-      return schObj;
+      return schObj.data;
     };
     const _reduceMaxLength = (accumulator, currentValue) => {
       return accumulator > currentValue.length ? accumulator : currentValue.length;
@@ -64,7 +64,7 @@
         const mandatory = thisObj.sch[key].mandatory ? '!' : ' ';
         let schema = _getSchemaString(thisObj.sch[key].value);
         _logger.verbose(`Test ${key.padEnd(keyLen)}`, `[${mandatory}] - ${schema}`);
-        _logger.verbose(`Test ${key.padEnd(keyLen)}`, `      » ${JSON.stringify(obj[key])}`);
+        _logger.verbose(`Test ${key.padEnd(keyLen)}`, `      » ${util.inspect(obj[key])}`);
       }
     };
     const _testFieldSchemaArray = function (sch) {
@@ -99,6 +99,10 @@
       if ((!this.sch[key].mandatory) && util.isNullOrUndefined(this.obj[key])) {
         return this.result.value &= 1;
       }
+      /** [OK] Matched any type */
+      if (this.sch[key].value == "") {
+        return this.result.value &= 1;
+      }
       /** [OK] Matched defined type */
       if (util.isString(this.sch[key].value) && (typeof this.obj[key] == this.sch[key].value)) {
         return this.result.value &= 1;
@@ -129,9 +133,11 @@
 
       return !!result.value;
     };
-    const _test = (obj) => {
-      if ((!util.isObject(obj)) && (!util.isFunction(obj))) return false;
-      return _testSchema(obj, schObj);
+    const _test = (...obj) => {
+      // if ((!util.isObject(obj)) && (!util.isFunction(obj))) return false;
+      // return [obj].flat(Infinity).every(_ => _testSchema(_, schObj));
+      const data = [obj].flat(Infinity);
+      return !!data.length && _testSchema({data}, schObj);
     };
 
     const _descriptor = {
@@ -145,7 +151,7 @@
       test                  : Object.assign({value: function () { return _test            (...arguments) }}, _descriptor),
     });
 
-    schObj = _parseSchemaObject(schema);
+    schObj = _parseSchemaObject({'!data': schema});
     Object.deepFreeze(this);
     return this;
   };
@@ -156,9 +162,9 @@
     return {
       help: function () {
         return `\
-[$Schema](schema, verbose) - object type verification
+[$Schema](schema, verbose) - Object helper to verify {schema} definition on objects
   .getSchemaObject()  - return schema object
-  .test(obj)          - check if the obj satisfy the schema
+  .test(obj)          - check if {obj} satisfy the schema
 `;
       },
     };
@@ -166,9 +172,16 @@
 
   /** Define deploy object */
   const _id = `$Schema`;
-  const version = `0.2.0`;
+  const version = `2.0.2`;
   const changelog = {
-    '0.2.0': [
+    '2.0.2': [
+      `[${_id}] - Create master object to simplify testing usage`,
+    ],
+    '2.0.1': [
+      `[${_id}] - Add empty schema condition: default true`,
+      `[${_id}] - Convert input to array to cover array input`,
+    ],
+    '2.0.0': [
       `Release [${_id}]`,
     ],
   };

@@ -17,7 +17,7 @@
     const _log = (label, title, message, type, newline) => {
       const d  = ISODate().toISOString().padEnd(29);
       const t  = ((typeof type != "string") ? 'V' : type.trim().substr(0,1)).toUpperCase().padEnd(3);
-      const l  = label.padEnd(15);
+      const l  = label.padEnd(20);
       const tt = (typeof title != "string") ? ' ' : title;
       const m  = (typeof message != "string") ? tojson(message) : message;
 
@@ -38,8 +38,9 @@
       _log(label, `Local`, `[${_id}@${version}]`);
     }
     const _runServer = (_id, version, changelog, value) => {
-      const lastVersion = global.dbs[dbName].system.js.findOne({_id}, {_id: 0, version: 1});
-      const res = global.dbs[dbName].system.js.updateOne({_id}, {$set: {value, version, changelog}}, {upsert: true});
+      const dbs = DBs(global.db);
+      const lastVersion = dbs[dbName].system.js.findOne({_id}, {_id: 0, version: 1});
+      const res = dbs[dbName].system.js.updateOne({_id}, {$set: {value, version, changelog}}, {upsert: true});
 
       _logUpserted(res.upsertedCount, _id, version);
       _logModified(res.modifiedCount, _id, lastVersion, version);
@@ -71,25 +72,25 @@
     return {
       help: function () {
         return `\
-[$Deploy](dbName)
-  .run(_id, version, changelog, value)
+[$Deploy](dbName) - Object helper for deploying script to database {dbName} on server
+  .run(_id, version, changelog, value)  - Deploy script to current session and to server if connected
 `;
       },
     };
   };
   const $DeployExt = function () {
     return {
-      is$Deploy: (obj) => {
-        return $Schema({'!data': $Deploy}).test({data: obj});
+      is$Deploy: function () {
+        return $Schema($Deploy).test(...arguments);
       },
     };
   };
 
   /** Define deploy object */
   const _id = `$Deploy`;
-  const version = `0.2.0`;
+  const version = `2.0.0`;
   const changelog = {
-    '0.2.0': [
+    '2.0.0': [
       `Release [${_id}]`,
     ],
   };

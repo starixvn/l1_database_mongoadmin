@@ -51,15 +51,15 @@
     Object.defineProperties(this, {
       [util.inspect.custom] : Object.assign({value: function () { return _toString          (...arguments) }}, _descriptor),
       toString              : Object.assign({value: function () { return _toString          (...arguments) }}, _descriptor),
+      getDifferent          : Object.assign({value: function () { return _getDifferent      (...arguments) }}, _descriptor),
+      getDuration           : Object.assign({value: function () { return _getDuration       (...arguments) }}, _descriptor),
+      getElapsedDuration    : Object.assign({value: function () { return _getElapsedDuration(...arguments) }}, _descriptor),
+      getISOTimer           : Object.assign({value: function () { return _getISOTimer       (...arguments) }}, _descriptor),
+      getTimer              : Object.assign({value: function () { return _getTimer          (...arguments) }}, _descriptor),
+      getTimerDuration      : Object.assign({value: function () { return _getTimerDuration  (...arguments) }}, _descriptor),
       register              : Object.assign({value: function () { return _register          (...arguments) }}, _descriptor),
       startTimer            : Object.assign({value: function () { return _startTimer        (...arguments) }}, _descriptor),
       stopTimer             : Object.assign({value: function () { return _stopTimer         (...arguments) }}, _descriptor),
-      getTimer              : Object.assign({value: function () { return _getTimer          (...arguments) }}, _descriptor),
-      getISOTimer           : Object.assign({value: function () { return _getISOTimer       (...arguments) }}, _descriptor),
-      getElapsedDuration    : Object.assign({value: function () { return _getElapsedDuration(...arguments) }}, _descriptor),
-      getDifferent          : Object.assign({value: function () { return _getDifferent      (...arguments) }}, _descriptor),
-      getDuration           : Object.assign({value: function () { return _getDuration       (...arguments) }}, _descriptor),
-      getTimerDuration      : Object.assign({value: function () { return _getTimerDuration  (...arguments) }}, _descriptor),
     });
 
     _startTimer();
@@ -77,16 +77,16 @@
       },
       help: function () {
         return `\
-[$Timer] - track time easier
+[$Timer] - Object helper for tracking time
+  .getDifferent(fromLabel, toLabel) - return different time in ms between 2 labels
+  .getDuration(label)               - return duration of custom label in ms since timer start
+  .getElapsedDuration(label)        - return elapsed time in ms since custom label registered
+  .getISOTimer(label)               - return custom label value as ISO string
+  .getTimer(label)                  - return custom label value as epoch
+  .getTimerDuration()               - return duration of the timer in ms since its start
   .register(label)                  - register custom label
   .startTimer()                     - start timer
   .stopTimer()                      - stop timer
-  .getTimer(label)                  - return custom label value as epoch
-  .getISOTimer(label)               - return custom label value as ISO string
-  .getElapsedDuration(label)        - return elapsed time in ms since custom label registered
-  .getDifferent(fromLabel, toLabel) - return different time in ms between 2 labels
-  .getDuration(label)               - return duration of custom label in ms since timer start
-  .getTimerDuration()               - return duration of the timer in ms since its start
 `;
       },
     };
@@ -94,9 +94,9 @@
 
   /** Define deploy object */
   const _id = `$Timer`;
-  const version = `0.2.0`;
+  const version = `2.0.0`;
   const changelog = {
-    '0.2.0': [
+    '2.0.0': [
       `Release [${_id}]`,
     ],
   };

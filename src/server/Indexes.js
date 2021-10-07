@@ -20,14 +20,14 @@
       if (!idxsObj) {
         return `Invalid [$Indexes]`;
       }
-      return `[$Indexes] ${idxsObj.coll._database._name}.${idxsObj.coll._name}`;
+      return `[$Indexes] ${idxsObj.coll.getDB().getName()}.${idxsObj.coll.getName()}`;
     };
     const _valueOf = () => {
       if (!srvIdxsObj) {
         return null;
       }
       return `\
-${srvIdxsObj.coll._database._name}.${srvIdxsObj.coll._name}
+${srvIdxsObj.coll.getDB().getName()}.${srvIdxsObj.coll.getName()}
 (${srvIdxsObj.idxs.map(Object.valueOf).sort().join(', ')})`;
     };
 
@@ -60,9 +60,6 @@ ${srvIdxsObj.coll._database._name}.${srvIdxsObj.coll._name}
     const _getRaw = () => {
       return idxsObj;
     };
-    const _getSrv = () => {
-      return srvIdxsObj;
-    };
     const _loadServerIndexes = () => {
       const title = `SrvIdxs `;
       if (!idxsObj) return;
@@ -72,11 +69,16 @@ ${srvIdxsObj.coll._database._name}.${srvIdxsObj.coll._name}
       } catch (e) {
         _logger.err(title, `[${e.code}-${e.name}] · ${e.errmsg}`);
       }
+      srvIdxs.forEach(_ => _.setDefaultCollation());
       const data = {
         coll: coll,
         idxs: srvIdxs,
       };
       srvIdxsObj = _parseIndexesObj(data);
+    };
+    const _getSrv = () => {
+      _loadServerIndexes();
+      return srvIdxsObj;
     };
     const _syncIndexes = () => {
       const title = `  Sync  `;
@@ -91,23 +93,45 @@ ${srvIdxsObj.coll._database._name}.${srvIdxsObj.coll._name}
       }
       idxsObj = srvIdxsObj;
     };
+    const isDefaultIndex = (idx) => {
+      return util.inspect(idx.getKey()) == util.inspect({_id: 1});
+    };
+    const isNotDefaultIndex = (idx) => {
+      return !isDefaultIndex(idx);
+    };
+    const _setLocalCollation = () => {
+      _loadServerIndexes();
+      const defaultIdx = srvIdxsObj.idxs.filter(isDefaultIndex)[0];
+      const defaultCollate = defaultIdx.getRaw().collation;
+      if (defaultCollate.valueOf() != $Collation().valueOf()) {
+        idxsObj.idxs.forEach(_ => _.setDefaultCollation(defaultCollate));
+      }
+    }
     const _create = () => {
       const title = ` Create `;
-      _loadServerIndexes();
-      const creating = idxsObj.idxs.filter(_ => !srvIdxsObj.idxs.map(Object.valueOf).includes(_.valueOf()));
+      _setLocalCollation();
+
+      const srvIdxValues = srvIdxsObj.idxs.map(Object.valueOf);
+      const creating = idxsObj.idxs.filter(_ => {
+        return !srvIdxValues.includes(_.valueOf());
+      });
       if (creating.length > 0) {
         _logger.info(title, `Creating ${creating.length} indexes on ${util.inspect(idxsObj.coll)}`);
         creating.forEach(_ => _.create(idxsObj.coll));
       }
       _loadServerIndexes();
     };
-    const notDefaultIndex = (idx) => {
-      return util.inspect(idx.getKey()) != util.inspect({_id: 1});
-    };
     const _drop = () => {
       const title = `  Drop  `;
-      _loadServerIndexes();
-      const dropping = srvIdxsObj.idxs.filter(notDefaultIndex).filter(_ => !idxsObj.idxs.map(Object.valueOf).includes(_.valueOf()));
+      _setLocalCollation();
+
+      const idxNames  = idxsObj.idxs.map(_ => _.getDef(idxsObj.coll).name);
+      const idxValues = idxsObj.idxs.map(Object.valueOf);
+      const dropping = srvIdxsObj.idxs.filter(isNotDefaultIndex).filter(_ => {
+        const hasName = idxNames.includes(_.getRaw().name);
+        const hasValue = idxValues.includes(_.valueOf());
+        return !(hasName && hasValue);
+      });
       if (dropping.length > 0) {
         _logger.info(title, `Dropping ${dropping.length} indexes from ${util.inspect(idxsObj.coll)}`);
         dropping.forEach(_ => _.drop(idxsObj.coll));
@@ -115,12 +139,12 @@ ${srvIdxsObj.coll._database._name}.${srvIdxsObj.coll._name}
       _loadServerIndexes();
     };
     const _deploy = () => {
-      _create();
       _drop();
+      _create();
     };
     const _recreate = () => {
       _loadServerIndexes();
-      srvIdxsObj.idxs.filter(notDefaultIndex).forEach(_ => _.recreate(srvIdxsObj.coll));
+      srvIdxsObj.idxs.filter(isNotDefaultIndex).forEach(_ => _.recreate(srvIdxsObj.coll));
       _loadServerIndexes();
     };
 
@@ -132,13 +156,13 @@ ${srvIdxsObj.coll._database._name}.${srvIdxsObj.coll._name}
       [util.inspect.custom] : Object.assign({value: function () { return _toString    (...arguments) }}, _descriptor),
       toString              : Object.assign({value: function () { return _toString    (...arguments) }}, _descriptor),
       valueOf               : Object.assign({value: function () { return _valueOf     (...arguments) }}, _descriptor),
+      create                : Object.assign({value: function () { return _create      (...arguments) }}, _descriptor),
+      deploy                : Object.assign({value: function () { return _deploy      (...arguments) }}, _descriptor),
+      drop                  : Object.assign({value: function () { return _drop        (...arguments) }}, _descriptor),
       getRaw                : Object.assign({value: function () { return _getRaw      (...arguments) }}, _descriptor),
       getSrv                : Object.assign({value: function () { return _getSrv      (...arguments) }}, _descriptor),
-      syncIndexes           : Object.assign({value: function () { return _syncIndexes (...arguments) }}, _descriptor),
-      create                : Object.assign({value: function () { return _create      (...arguments) }}, _descriptor),
-      drop                  : Object.assign({value: function () { return _drop        (...arguments) }}, _descriptor),
-      deploy                : Object.assign({value: function () { return _deploy      (...arguments) }}, _descriptor),
       recreate              : Object.assign({value: function () { return _recreate    (...arguments) }}, _descriptor),
+      syncIndexes           : Object.assign({value: function () { return _syncIndexes (...arguments) }}, _descriptor),
     });
 
     _genData();
@@ -162,8 +186,8 @@ ${srvIdxsObj.coll._database._name}.${srvIdxsObj.coll._name}
         }
         return null;
       },
-      is$Indexes: (obj) => {
-        return $Schema({'!data': $Indexes}).test({data: obj});
+      is$Indexes: function () {
+        return $Schema($Indexes).test(...arguments);
       },
     };
   };
@@ -171,14 +195,14 @@ ${srvIdxsObj.coll._database._name}.${srvIdxsObj.coll._name}
     return {
       help: function () {
         return `\
-[$Index](coll, idxs) - Collection indexes object helper
+[$Index](coll, idxs) - Object helper for managing indexes on {coll} collection
+  .create()       - Create new defined indexes on collection
+  .deploy()       - Create new defined and drop old undefined indexes on collection
+  .drop()         - Drop old undefined indexes from collection
   .getRaw()       - Return raw indexes object
   .getSrv()       - Return server indexes object
-  .syncIndexes()  - Update local indexes to matched with server indexes
-  .create()       - Create new defined indexes on collection
-  .drop()         - Drop old undefined indexes from collection
-  .deploy()       - Create new defined and drop old undefined indexes on collection
   .recreate()     - Drop then create every server indexes on collection
+  .syncIndexes()  - Update local indexes to matched with server indexes
 `;
       },
     };
@@ -186,9 +210,15 @@ ${srvIdxsObj.coll._database._name}.${srvIdxsObj.coll._name}
 
   /** Define deploy object */
   const _id = `$Indexes`;
-  const version = `0.2.0`;
+  const version = `2.0.1`;
   const changelog = {
-    '0.2.0': [
+    '2.0.1': [
+      `[${_id}] Remove usage of internal field, using supported methods instead`,
+      `[${_id}] Server indexes will have default collation is simple`,
+      `[${_id}] Local indexes will have default collation is as the same as _id_ index on server`,
+      `[${_id}] Detect dropping indexes based on both name and value`,
+    ],
+    '2.0.0': [
       `Release [${_id}]`,
     ],
   };

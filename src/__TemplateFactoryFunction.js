@@ -36,7 +36,11 @@
     return this;
   };
   const $ClassExt = function () {
-    return {};
+    return {
+      is$Class: function () {
+        return $Schema($Class).test(...arguments);
+      },
+    };
   };
   const __$Class__ = function () {
     return {
