@@ -102,6 +102,7 @@ ${srvIdxsObj.coll.getDB().getName()}.${srvIdxsObj.coll.getName()}
     const _setLocalCollation = () => {
       _loadServerIndexes();
       const defaultIdx = srvIdxsObj.idxs.filter(isDefaultIndex)[0];
+      if (!defaultIdx) return;
       const defaultCollate = defaultIdx.getRaw().collation;
       if (defaultCollate.valueOf() != $Collation().valueOf()) {
         idxsObj.idxs.forEach(_ => _.setDefaultCollation(defaultCollate));
