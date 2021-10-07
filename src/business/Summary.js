@@ -90,9 +90,12 @@
         logger.err(`Summary Time`, `[${_getTimeStr(time, round)}] is expired`);
         return false;
       }
-      if (_getRoundedTime(time, round).valueOf() >=  _getRoundedTime(Date.now(), round).valueOf()) {
-        logger.err(`Summary Time`, `[${_getTimeStr(time, round)}] is not finished`);
+      if (_getRoundedTime(time, round).valueOf() > _getRoundedTime(Date.now(), round).valueOf()) {
+        logger.err(`Summary Time`, `[${_getTimeStr(time, round)}] is in the future`);
         return false;
+      }
+      if (_getRoundedTime(time, round).valueOf() == _getRoundedTime(Date.now(), round).valueOf()) {
+        logger.warn(`Summary Time`, `[${_getTimeStr(time, round)}] is not finished`);
       }
       return true;
     };
@@ -293,6 +296,7 @@
     '2.0.1': [
       `[${_id}] Add force option to bypass time audit`,
       `[${_id}] Using EJSON.stringify instead of JSON.stringify for BSON compatibility`,
+      `[${_id}] Current round time summary will still be executed, it will raise warning instead of error`,
     ],
     '2.0.0': [
       `Release [${_id}]`,
