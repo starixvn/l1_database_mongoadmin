@@ -22,7 +22,7 @@ services:
       - ./.storage/mongodb/log:/data/db/.log:rw
     secrets:
       - keyFile
-    command: --config /etc/mongod.conf --port ${MONGOD_PORT} --replSet AdminAPI --auth
+    command: --config /etc/mongod.conf --port ${MONGOD_PORT} --replSet ${MONGOD_REPL} --auth
     security_opt:
       - seccomp=unconfined
 
