@@ -35,3 +35,4 @@ packages/
 .storage/
 secrets/
 __Pandora__/
+.env
