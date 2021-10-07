@@ -10,7 +10,7 @@ services:
     init: true
     networks:
       mongo_internal:
-        ipv4_address: 172.39.20.68
+        ipv4_address: ${CONTAINER_IP}
     ports:
       - '0.0.0.0:${MONGOD_PORT}:${MONGOD_PORT}'
     environment:
