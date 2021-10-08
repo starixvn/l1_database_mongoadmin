@@ -1,6 +1,7 @@
 deploy: {
   const oldDB = global.db;
   global.db = api.admin;
+  auth(global.db);
   global.dbs = DBs(global.db);
   if (!dbs._mongo?._identity?.api) {
     print(Error(`cannot deploy roles on server ${util.inspect(dbs._mongo)}, must be an api server`));
