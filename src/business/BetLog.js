@@ -127,7 +127,7 @@
       return data.length;
     };
     const _processAll = (limit, flag) => {
-      while (_processBetLog(limit, flag) > 0) {};
+      while (_processBetLog(limit, flag) >= limit) {};
     };
 
     const _descriptor = {
@@ -163,8 +163,11 @@
 
   /** Define deploy object */
   const _id = `$BetLog`;
-  const version = `2.0.1`;
+  const version = `2.0.2`;
   const changelog = {
+    '2.0.2': [
+      `[${_id}] Change stoping criteria`,
+    ],
     '2.0.1': [
       `[${_id}] Handle null data`,
     ],
