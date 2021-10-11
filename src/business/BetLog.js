@@ -108,7 +108,7 @@
         {'__archive.betlogs': {$ne: _flag}},
         _projectBetLog(),
         {limit: _limit},
-      ).sort({_id: 1}).map(_cookBetLog).toArray();
+      ).map(_cookBetLog).toArray();
       if (!data.length) return data.length;
 
       try {
@@ -167,6 +167,7 @@
   const changelog = {
     '2.0.2': [
       `[${_id}] Change stoping criteria`,
+      `[${_id}] Perfomance tuning - Remove unnecessary sort`,
     ],
     '2.0.1': [
       `[${_id}] Handle null data`,
