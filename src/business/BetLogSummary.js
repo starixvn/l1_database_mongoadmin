@@ -119,6 +119,8 @@
           return `Cocos`;
         case 2:
           return `Mobi`;
+        case 3:
+          return `Instant`;
         default:
           return `null`;
       }
@@ -203,8 +205,11 @@
 
   /** Define deploy object */
   const _id = `$BetLogSummary`;
-  const version = `2.0.1`;
+  const version = `2.0.2`;
   const changelog = {
+    '2.0.2': [
+      `[${_id}] Add value for parsing Instant system`,
+    ],
     '2.0.1': [
       `[${_id}] Using ts field for better time support than time.request string field`,
     ],
