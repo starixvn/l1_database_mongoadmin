@@ -1,4 +1,6 @@
 deploy: {
+  git.pull();
+
   const oldDB = global.db;
   global.db = api_pro.admin;
   auth(global.db);
