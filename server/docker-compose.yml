@@ -5,12 +5,12 @@ services:
     build:
       context: Dockerfile.d
       dockerfile: Dockerfile.mongod
-    hostname: MongoAdminAPI
+    hostname: MongoAdminAPI${MONGOD_ENV}
     restart: always
     init: true
     networks:
       mongo_internal:
-        ipv4_address: 172.39.20.68
+        ipv4_address: ${CONTAINER_IP}
     ports:
       - '0.0.0.0:${MONGOD_PORT}:${MONGOD_PORT}'
     environment:
@@ -22,7 +22,7 @@ services:
       - ./.storage/mongodb/log:/data/db/.log:rw
     secrets:
       - keyFile
-    command: --config /etc/mongod.conf --port ${MONGOD_PORT} --replSet AdminAPI --auth
+    command: --config /etc/mongod.conf --port ${MONGOD_PORT} --replSet ${MONGOD_REPL}${MONGOD_ENV} --auth
     security_opt:
       - seccomp=unconfined
 

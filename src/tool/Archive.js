@@ -4,7 +4,7 @@
     if (!(this instanceof $Archive)) return new $Archive(...arguments);
 
     /** Logger */
-    const logger  = $Log(`ARCHIVE     `);
+    const logger  = $Log(`ARCHIVE `);
 
     /** DBs objects */
     const fromDBs = DBs(from);
