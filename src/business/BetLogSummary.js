@@ -128,9 +128,9 @@
     const _processSummaryData = function (doc) {
       const res = destination.updateOne(doc.key, {$set: doc.value}, {upsert: true});
       if (res.upsertedCount > 0) {
-        logger.info(`From ${source.getName()}`, `- Inserted new summary record for G${doc.key.gameId} ${doc.key.currency} ${_parseSystem(doc.key.system)}`);
+        logger.info(util.inspect(source), `- Inserted new summary record for G${doc.key.gameId} ${doc.key.currency} ${_parseSystem(doc.key.system)}`);
       } else if (res.modifiedCount > 0) {
-        logger.info(`From ${source.getName()}`, `- Modified summary record for G${doc.key.gameId} ${doc.key.currency} ${_parseSystem(doc.key.system)}`);
+        logger.info(util.inspect(source), `- Modified summary record for G${doc.key.gameId} ${doc.key.currency} ${_parseSystem(doc.key.system)}`);
       }
 
       const idx = this.oldSums.indexOf(_toSortedObjectJson(doc.key));
@@ -143,13 +143,13 @@
         const _doc = Object.assign({gameId: null, currency: null, system: null}, EJSON.parse(doc));
         const res = destination.deleteOne(_doc);
         if (res.deletedCount > 0) {
-          logger.warn(`From ${source.getName()}`, `- Deleted summary record for G${_doc.gameId} ${_doc.currency} ${_parseSystem(_doc.system)}`);
+          logger.warn(util.inspect(source), `- Deleted summary record for G${_doc.gameId} ${_doc.currency} ${_parseSystem(_doc.system)}`);
         } else {
-          logger.info(`From ${source.getName()}`, `- No summary record deleted for G${_doc.gameId} ${_doc.currency} ${_parseSystem(_doc.system)}`);
+          logger.info(util.inspect(source), `- No summary record deleted for G${_doc.gameId} ${_doc.currency} ${_parseSystem(_doc.system)}`);
         }
       } catch (e) {
-        logger.err(`From ${source.getName()}`, `- Something is WRONG while deleting summary record for ${util.inspect(doc)}`);
-        logger.err(`From ${source.getName()}`, `    ${util.inspect(e)}`);
+        logger.err(util.inspect(source), `- Something is WRONG while deleting summary record for ${util.inspect(doc)}`);
+        logger.err(util.inspect(source), `    ${util.inspect(e)}`);
       }
     };
     const _runSummary = (time) => {
@@ -162,13 +162,13 @@
       const summaries = source.aggregate(agg).toArray();
 
       if (summaries.length > 0) {
-        logger.info(`From ${source.getName()}`, `Summary for ${_getTimeStr(_time, _round)} started`);
+        logger.info(util.inspect(source), `Summary for ${_getTimeStr(_time, _round)} started`);
       }
       summaries.forEach(_processSummaryData, {oldSums: oldSums});
 
       oldSums.forEach(_processOldSummaryData);
       if (summaries.length > 0) {
-        logger.info(`From ${source.getName()}`, `Done summarize data for ${_getTimeStr(_time, _round)} in ${timer.getTimerDuration()} ms`);
+        logger.info(util.inspect(source), `Done summarize data for ${_getTimeStr(_time, _round)} in ${timer.getTimerDuration()} ms`);
       }
     };
 
