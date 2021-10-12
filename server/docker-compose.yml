@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  mongodb:
+    build:
+      context: Dockerfile.d
+      dockerfile: Dockerfile.mongod
+    hostname: MongoAdminAPI${MONGOD_ENV}
+    restart: always
+    init: true
+    networks:
+      mongo_internal:
+        ipv4_address: ${CONTAINER_IP}
+    ports:
+      - '0.0.0.0:${MONGOD_PORT}:${MONGOD_PORT}'
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: 'root'
+      MONGO_INITDB_ROOT_PASSWORD: '-'
+    volumes:
+      - ./mongod/adminapi.mongod.conf:/etc/mongod.conf:ro
+      - ./.storage/mongodb/db:/data/db:rw
+      - ./.storage/mongodb/log:/data/db/.log:rw
+    secrets:
+      - keyFile
+    command: --config /etc/mongod.conf --port ${MONGOD_PORT} --replSet ${MONGOD_REPL}${MONGOD_ENV} --auth
+    security_opt:
+      - seccomp=unconfined
+
+secrets:
+  keyFile:
+    file: ./secrets/keyFile
+
+networks:
+  mongo_internal:
+    external:
+      name: luminet_internal_network
