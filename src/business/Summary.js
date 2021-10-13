@@ -291,7 +291,7 @@
 
   /** Define deploy object */
   const _id = `$Summary`;
-  const version = `2.0.1`;
+  const version = `2.0.2`;
   const changelog = {
     '2.0.2': [
       `[${_id}] Configurize [id], [memberId] fields`,
