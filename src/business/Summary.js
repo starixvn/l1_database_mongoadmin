@@ -132,7 +132,7 @@
       agg.push({$group: {
         _id: {
           currency: {$ifNull: [`$__archive.currency`, null]},
-          isCash: {$ifNull: [`$__archive.isCash`, null]},
+          isCash: {$ifNull: [`$__archive.isCash`, {$literal: conf.default.isCash}]},
         },
         stake: {$sum: `$stake`},
         payout: {$sum: `$payout`},
@@ -161,7 +161,7 @@
         return { updateMany: {
           filter: {uid: _.id, [`__archive.${field}`]: {$exists: false}},
           update: [
-            {$set: {[`__archive.${field}`]: {$literal: _[field]}}}
+            {$set: {[`__archive.${field}`]: {$literal: _[field] ?? conf.default[field] ?? null}}}
           ],
         }};
       }).toArray();
@@ -291,8 +291,11 @@
 
   /** Define deploy object */
   const _id = `$Summary`;
-  const version = `2.0.2`;
+  const version = `2.0.3`;
   const changelog = {
+    '2.0.3': [
+      `[${_id}] Configurize default value for additional fields`,
+    ],
     '2.0.2': [
       `[${_id}] Configurize [id], [memberId] fields`,
       `[${_id}] [settled] field can be non-boolean`,
