@@ -88,10 +88,7 @@
     const _create = () => {
       const title = ` Create    `;
       _loadServerCollectionInfo();
-      if (srvInfoObj) {
-        logger.err(title, `Collection ${util.inspect(srvInfoObj.name)} has already existed`);
-        return;
-      }
+      if (srvInfoObj) return;
       const options = { ...infoObj.options };
       if (options.collation) {
         options.collation = options.collation.getSimple();
