@@ -4,7 +4,7 @@
     if (!(this instanceof $Collection)) return new $Collection(...arguments);
 
     /** Private constant */
-    const logger = $Log(`COLLECTION`);
+    const logger = $Log(`COLL`);
 
     const infoSchema = $Schema({
       '!name'   : "Collection",
