@@ -109,18 +109,18 @@
         {[conf.fields.time.replace('$', '')]: {$gte: _from}},
         {[conf.fields.time.replace('$', '')]: {$lt: _to}},
       ]}});
-      agg.push({$project: {_id: 0, id: 1}});
+      agg.push({$project: {_id: 0, [conf.fields.local]: 1}});
       agg.push({$lookup: {
         from: conf.coll.group + conf.coll.postfix,
-        localField: `id`,
+        localField: conf.fields.local,
         foreignField: conf.fields.map,
         as: `bets`,
       }});
       agg.push({$unwind: `$bets`});
       agg.push({$replaceWith: `$bets`});
       agg.push({$match: {$and: [
-        {memberId: {$gt: 0}},
-        {[conf.fields.settled.replace('$', '')]: true},
+        {[conf.fields.memberId]: {$gt: 0}},
+        {$expr: {$gt: [{$toInt: conf.fields.settled}, 0]}},
       ]}});
       agg.push({$project: {
         _id: 0,
@@ -131,8 +131,8 @@
       }});
       agg.push({$group: {
         _id: {
-          currency: `$__archive.currency`,
-          isCash: {$ifNull: [`$__archive.isCash`, null]},
+          currency: {$ifNull: [`$__archive.currency`, null]},
+          isCash: {$ifNull: [`$__archive.isCash`, {$literal: conf.default.isCash}]},
         },
         stake: {$sum: `$stake`},
         payout: {$sum: `$payout`},
@@ -161,7 +161,7 @@
         return { updateMany: {
           filter: {uid: _.id, [`__archive.${field}`]: {$exists: false}},
           update: [
-            {$set: {[`__archive.${field}`]: {$literal: _[field]}}}
+            {$set: {[`__archive.${field}`]: {$literal: _[field] ?? conf.default[field] ?? null}}}
           ],
         }};
       }).toArray();
@@ -291,8 +291,16 @@
 
   /** Define deploy object */
   const _id = `$Summary`;
-  const version = `2.0.1`;
+  const version = `2.0.3`;
   const changelog = {
+    '2.0.3': [
+      `[${_id}] Configurize default value for additional fields`,
+    ],
+    '2.0.2': [
+      `[${_id}] Configurize [id], [memberId] fields`,
+      `[${_id}] [settled] field can be non-boolean`,
+      `[${_id}] Ensure [currency] existence in aggregate result`,
+    ],
     '2.0.1': [
       `[${_id}] Add force option to bypass time audit`,
       `[${_id}] Using EJSON.stringify instead of JSON.stringify for BSON compatibility`,
