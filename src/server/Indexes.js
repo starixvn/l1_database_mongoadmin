@@ -37,7 +37,7 @@ ${srvIdxsObj.coll.getDB().getName()}.${srvIdxsObj.coll.getName()}
         obj.idxs = [];
       }
       if (!idxsSchema.test(obj)) {
-        _logger.err(` Audit  `, `Invalid input data for indexes object`);
+        _logger.err(`Audit`, `Invalid input data for indexes object`);
         return null;
       }
       return obj;
@@ -61,7 +61,7 @@ ${srvIdxsObj.coll.getDB().getName()}.${srvIdxsObj.coll.getName()}
       return idxsObj;
     };
     const _loadServerIndexes = () => {
-      const title = `SrvIdxs `;
+      const title = `SrvIdxs`;
       if (!idxsObj) return;
       let srvIdxs = [];
       try {
@@ -81,7 +81,7 @@ ${srvIdxsObj.coll.getDB().getName()}.${srvIdxsObj.coll.getName()}
       return srvIdxsObj;
     };
     const _syncIndexes = () => {
-      const title = `  Sync  `;
+      const title = `Sync`;
       _loadServerIndexes();
       if (!srvIdxsObj) {
         _logger.warn(title, `Error loading server indexes list. Local indexes list is not synced.`);
@@ -109,7 +109,7 @@ ${srvIdxsObj.coll.getDB().getName()}.${srvIdxsObj.coll.getName()}
       }
     }
     const _create = () => {
-      const title = ` Create `;
+      const title = `Create`;
       _setLocalCollation();
 
       const srvIdxValues = srvIdxsObj.idxs.map(Object.valueOf);
@@ -123,7 +123,7 @@ ${srvIdxsObj.coll.getDB().getName()}.${srvIdxsObj.coll.getName()}
       _loadServerIndexes();
     };
     const _drop = () => {
-      const title = `  Drop  `;
+      const title = `Drop`;
       _setLocalCollation();
 
       const idxNames  = idxsObj.idxs.map(_ => _.getDef(idxsObj.coll).name);

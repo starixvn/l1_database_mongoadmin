@@ -4,6 +4,7 @@
     if (!(this instanceof $Collation)) return new $Collation(...arguments);
 
     /** Private constant */
+    const logger = $Log(`COLL`);
     const collationSchema = $Schema({
       '!locale'         : "string",
       'caseLevel'       : "boolean",
@@ -39,7 +40,7 @@
         delete _obj[_];
       })
       if (!collationSchema.test(_obj)) {
-        _logger.err(`Audit`, `Invalid input data for collation object`);
+        logger.err(`Audit`, `Invalid input data for collation object`);
         return Object.assign({}, this.default);
       }
       _checkValue(_obj, `locale`);

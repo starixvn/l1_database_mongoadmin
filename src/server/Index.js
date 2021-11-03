@@ -47,7 +47,7 @@
 
     /** Private function */
     const _parseIndexObject = (obj) => {
-      const title = ` Audit  `;
+      const title = `Audit`;
 
       if (obj.hasOwnProperty(`collation`)) {
         obj.collation = $Collation(obj.collation);
@@ -121,7 +121,7 @@
       return idxObj.key;
     };
     const _create = (coll) => {
-      const title = ` Create `;
+      const title = `Create`;
       if (coll?.constructor?.name != "Collection") {
         _logger.err(title, `Invalid collection ${util.inspect(coll)}`);
         return;
@@ -148,7 +148,7 @@
       }
     };
     const _drop = (coll) => {
-      const title = `  Drop  `;
+      const title = `Drop`;
       if (util.inspect(idxObj.key) == util.inspect({_id: 1})) return;
       if (coll?.constructor?.name != "Collection") {
         _logger.err(title, `Invalid collection ${util.inspect(coll)}`);
