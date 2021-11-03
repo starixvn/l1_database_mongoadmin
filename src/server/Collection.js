@@ -38,7 +38,7 @@
     /** Private function */
     const _parseCollectionInfo = (obj) => {
       if (!infoSchema.test(obj)) {
-        logger.err(` Audit    `, `Invalid input data for info object`);
+        logger.err(`Audit`, `Invalid input data for info object`);
         return null;
       }
       return obj;
@@ -86,7 +86,7 @@
       srvInfoObj = _parseCollectionInfo(srvInfo);
     }
     const _create = () => {
-      const title = ` Create    `;
+      const title = `Create`;
       _loadServerCollectionInfo();
       if (srvInfoObj) return;
       const options = { ...infoObj.options };
@@ -135,7 +135,7 @@
       }
     };
     const _validate = () => {
-      const title = ` Validate  `;
+      const title = `Validate`;
       _loadServerCollectionInfo();
       if (!srvInfoObj) {
         logger.err(title, `Collection ${util.inspect(infoObj.name)} does not exist on server`);
