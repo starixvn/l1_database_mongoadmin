@@ -186,9 +186,9 @@
 
   /** Define deploy object */
   const _id = `$Collection`;
-  const version = `1.0.0`;
+  const version = `2.0.0`;
   const changelog = {
-    '1.0.0': [
+    '2.0.0': [
       `Release [${_id}]`,
     ],
   };
