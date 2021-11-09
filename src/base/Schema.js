@@ -17,7 +17,7 @@
 
     /** Private function */
     const _parseSchemaObjectField = function (key) {
-      const parsed = /^(!)?(.*)$/.exec(key);
+      const parsed = /^(!)*(.*)$/.exec(key);
       Object.assign(this.result, {
         [parsed[2]]: {
           mandatory: !!parsed[1],
@@ -90,8 +90,15 @@
         return this.result.value &= 0;
       }
 
+      /** If type is Array, test for it right away */
+      if (this.sch[key].value?.name == "Array" || this.sch[key].value == "Array") {
+        return this.result.value &= util.isArray(this.obj[key]);
+      }
+
       /** If tested object is an Array, combine result of every items */
       if (util.isArray(this.obj[key])) {
+        /** Mandatory need at least one item matched */
+        if (this.sch[key].mandatory && this.obj[key].length == 0) return this.result.value &= 0;
         return this.result.value &= this.obj[key].every(item => _testSchema({[key]: item}, {[key]: this.sch[key]}));
       }
 
@@ -137,7 +144,7 @@
       // if ((!util.isObject(obj)) && (!util.isFunction(obj))) return false;
       // return [obj].flat(Infinity).every(_ => _testSchema(_, schObj));
       const data = [obj].flat(Infinity);
-      return !!data.length && _testSchema({data}, schObj);
+      return _testSchema({data}, schObj);
     };
 
     const _descriptor = {
@@ -172,8 +179,11 @@
 
   /** Define deploy object */
   const _id = `$Schema`;
-  const version = `2.0.2`;
+  const version = `2.0.3`;
   const changelog = {
+    '2.0.3': [
+      `[${_id}] - Cover testing for Array related data`,
+    ],
     '2.0.2': [
       `[${_id}] - Create master object to simplify testing usage`,
     ],
