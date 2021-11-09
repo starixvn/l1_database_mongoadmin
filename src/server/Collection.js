@@ -29,7 +29,7 @@
 
     /** Basic function */
     const _toString = () => {
-      return `[$Collection]`;
+      return `[$Collection] - ${util.inspect(infoObj.name)}`;
     };
     const _valueOf = () => {
       return ``;
@@ -178,7 +178,7 @@
 [$Collection](coll, options) - Object helper for managing collection options
   .create()   - Create collection with provided options
   .getRaw()   - Get the raw information object
-  .valdiate() - Validate server collection options with provided ones
+  .validate() - Validate server collection options with provided ones
 `;
       },
     };
@@ -186,8 +186,11 @@
 
   /** Define deploy object */
   const _id = `$Collection`;
-  const version = `2.0.0`;
+  const version = `2.0.1`;
   const changelog = {
+    '2.0.1': [
+      `[${_id}] - Update string related info`,
+    ],
     '2.0.0': [
       `Release [${_id}]`,
     ],
