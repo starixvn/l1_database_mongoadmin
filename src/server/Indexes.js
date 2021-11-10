@@ -63,7 +63,6 @@ ${srvIdxsObj.coll.getDB().getName()}.${srvIdxsObj.coll.getName()}
     const _loadServerIndexes = () => {
       const title = `SrvIdxs`;
       if (!idxsObj) return;
-      print(`${util.inspect(idxsObj.coll)}`);
       let srvIdxs = [];
       try {
         srvIdxs = idxsObj.coll.getIndexes().map($Index);
