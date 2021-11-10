@@ -8,7 +8,7 @@
 
     const idxsSchema = $Schema({
       '!coll' : "Collection",
-      '!idxs' : $Index,
+      'idxs' : $Index,
     });
 
     /** Private variable */
@@ -63,6 +63,7 @@ ${srvIdxsObj.coll.getDB().getName()}.${srvIdxsObj.coll.getName()}
     const _loadServerIndexes = () => {
       const title = `SrvIdxs`;
       if (!idxsObj) return;
+      print(`${util.inspect(idxsObj.coll)}`);
       let srvIdxs = [];
       try {
         srvIdxs = idxsObj.coll.getIndexes().map($Index);
@@ -120,7 +121,6 @@ ${srvIdxsObj.coll.getDB().getName()}.${srvIdxsObj.coll.getName()}
         _logger.info(title, `Creating ${creating.length} indexes on ${util.inspect(idxsObj.coll)}`);
         creating.forEach(_ => _.create(idxsObj.coll));
       }
-      _loadServerIndexes();
     };
     const _drop = () => {
       const title = `Drop`;
@@ -137,7 +137,6 @@ ${srvIdxsObj.coll.getDB().getName()}.${srvIdxsObj.coll.getName()}
         _logger.info(title, `Dropping ${dropping.length} indexes from ${util.inspect(idxsObj.coll)}`);
         dropping.forEach(_ => _.drop(idxsObj.coll));
       }
-      _loadServerIndexes();
     };
     const _deploy = () => {
       _drop();
@@ -146,7 +145,6 @@ ${srvIdxsObj.coll.getDB().getName()}.${srvIdxsObj.coll.getName()}
     const _recreate = () => {
       _loadServerIndexes();
       srvIdxsObj.idxs.filter(isNotDefaultIndex).forEach(_ => _.recreate(srvIdxsObj.coll));
-      _loadServerIndexes();
     };
 
     const _descriptor = {
@@ -154,21 +152,21 @@ ${srvIdxsObj.coll.getDB().getName()}.${srvIdxsObj.coll.getName()}
       enumerable: true,
     };
     Object.defineProperties(this, {
-      [util.inspect.custom] : Object.assign({value: function () { return _toString    (...arguments) }}, _descriptor),
-      toString              : Object.assign({value: function () { return _toString    (...arguments) }}, _descriptor),
-      valueOf               : Object.assign({value: function () { return _valueOf     (...arguments) }}, _descriptor),
-      create                : Object.assign({value: function () { return _create      (...arguments) }}, _descriptor),
-      deploy                : Object.assign({value: function () { return _deploy      (...arguments) }}, _descriptor),
-      drop                  : Object.assign({value: function () { return _drop        (...arguments) }}, _descriptor),
-      getRaw                : Object.assign({value: function () { return _getRaw      (...arguments) }}, _descriptor),
-      getSrv                : Object.assign({value: function () { return _getSrv      (...arguments) }}, _descriptor),
-      recreate              : Object.assign({value: function () { return _recreate    (...arguments) }}, _descriptor),
-      syncIndexes           : Object.assign({value: function () { return _syncIndexes (...arguments) }}, _descriptor),
+      [util.inspect.custom] : Object.assign({value: function () { return _toString          (...arguments) }}, _descriptor),
+      toString              : Object.assign({value: function () { return _toString          (...arguments) }}, _descriptor),
+      valueOf               : Object.assign({value: function () { return _valueOf           (...arguments) }}, _descriptor),
+      create                : Object.assign({value: function () { return _create            (...arguments) }}, _descriptor),
+      deploy                : Object.assign({value: function () { return _deploy            (...arguments) }}, _descriptor),
+      drop                  : Object.assign({value: function () { return _drop              (...arguments) }}, _descriptor),
+      loadServerIndexes     : Object.assign({value: function () { return _loadServerIndexes (...arguments) }}, _descriptor),
+      getRaw                : Object.assign({value: function () { return _getRaw            (...arguments) }}, _descriptor),
+      getSrv                : Object.assign({value: function () { return _getSrv            (...arguments) }}, _descriptor),
+      recreate              : Object.assign({value: function () { return _recreate          (...arguments) }}, _descriptor),
+      syncIndexes           : Object.assign({value: function () { return _syncIndexes       (...arguments) }}, _descriptor),
     });
 
     _genData();
     if (!idxsObj) return null;
-    _loadServerIndexes();
 
     Object.deepFreeze(this);
     return this;
@@ -196,7 +194,7 @@ ${srvIdxsObj.coll.getDB().getName()}.${srvIdxsObj.coll.getName()}
     return {
       help: function () {
         return `\
-[$Index](coll, idxs) - Object helper for managing indexes on {coll} collection
+[$Indexes](coll, idxs) - Object helper for managing indexes on {coll} collection
   .create()       - Create new defined indexes on collection
   .deploy()       - Create new defined and drop old undefined indexes on collection
   .drop()         - Drop old undefined indexes from collection
@@ -211,8 +209,12 @@ ${srvIdxsObj.coll.getDB().getName()}.${srvIdxsObj.coll.getName()}
 
   /** Define deploy object */
   const _id = `$Indexes`;
-  const version = `2.0.1`;
+  const version = `2.0.2`;
   const changelog = {
+    '2.0.2': [
+      `[${_id}] Update checking rules - no need to specify list of indexes`,
+      `[${_id}] Reduce number of loadServerIndexes() calls`,
+    ],
     '2.0.1': [
       `[${_id}] Remove usage of internal field, using supported methods instead`,
       `[${_id}] Server indexes will have default collation is simple`,
