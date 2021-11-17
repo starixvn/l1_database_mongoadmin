@@ -14,7 +14,7 @@
 
     /** Basic function */
     const _toString = () => {
-      return `[$BISch] ${version}`;
+      return `[$BISch] ${(schObj?.databases ?? []).map($BIDb.getDef).map(_ => _.name).join(`, `)}`;
     };
 
     /** Private function */
