@@ -1,17 +1,12 @@
 {
-  const $BISch = function (_id, created, version, databases) {
+  const $BISch = function () {
     /** Self construct */
     if (!(this instanceof $BISch)) return new $BISch(...arguments);
 
     /** Private constant */
     const logger = $Log(`BI.SCH`);
     const schSchema = $Schema({
-      '!_id'      : ObjectId,
-      '!created'  : Date,
-      'version'   : "string",
-      '!schema'   : {
-        '!databases'  : $BIDb,
-      },
+      '!databases'  : $BIDb,
     });
 
     /** Private variable */
@@ -39,10 +34,8 @@
         schObj = _parseSchObject(arguments[0]);
         return;
       }
-      const data = { _id, created, version };
-      data.schema = {
-        databases: [databases].flat(Infinity).map($BIDb),
-      };
+      const data = {};
+      data.databases = [...arguments].flat(Infinity).map($BIDb);
       schObj = _parseSchObject(data);
     };
     const _getRaw = () => {
@@ -50,7 +43,7 @@
     };
     const _getDef = () => {
       const data = {...schObj};
-      data.schema.databases = data.schema.databases.map($BIDb.getDef);
+      data.databases = data.databases.map($BIDb.getDef);
       return data;
     };
 
