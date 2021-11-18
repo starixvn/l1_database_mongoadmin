@@ -39,7 +39,7 @@
         return;
       }
       const data = { name };
-      data.tables = [tables].flat(Infinity).map($BITbl);
+      data.tables = [tables].flat(Infinity).filter(Boolean).map($BITbl).filter(_ => !!_.getRaw());
       dbObj = _parseDbObject(data);
     };
     const _getRaw = () => {

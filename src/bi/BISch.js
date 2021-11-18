@@ -35,7 +35,7 @@
         return;
       }
       const data = {};
-      data.databases = [...arguments].flat(Infinity).map($BIDb);
+      data.databases = [...arguments].flat(Infinity).filter(Boolean).map($BIDb).filter(_ => !!_.getRaw());
       schObj = _parseSchObject(data);
     };
     const _getRaw = () => {

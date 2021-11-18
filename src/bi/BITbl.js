@@ -54,7 +54,7 @@
       }
       const data = { mongo_name, sql_name };
       data.pipeline = _parsePipeline(pipeline);
-      data.columns  = [columns].flat(Infinity).map($BICol);
+      data.columns  = [columns].flat(Infinity).filter(Boolean).map($BICol).filter(_ => !!_.getRaw());
       tblObj = _parseTblObject(data);
     };
     const _getRaw = () => {
