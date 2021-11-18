@@ -24,7 +24,7 @@
     /** Private function */
     const _parseDbObject = (obj) => {
       if (!dbSchema.test(obj)) {
-        logger.err(`Audit`, `Invalid input data for BI database object`);
+        logger.err(`Audit`, `Invalid input data for BI database object - ${obj?.name}`);
         return null;
       }
       return obj;

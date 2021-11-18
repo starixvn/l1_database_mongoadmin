@@ -8,7 +8,7 @@
     const tblSchema = $Schema({
       '!mongo_name' : "string",
       '!sql_name'   : "string",
-      '!pipeline'   : "object",
+      'pipeline'    : "object",
       '!columns'    : $BICol,
     });
 
@@ -27,7 +27,7 @@
     /** Private function */
     const _parseTblObject = (obj) => {
       if (!tblSchema.test(obj)) {
-        logger.err(`Audit`, `Invalid input data for BI table object`);
+        logger.err(`Audit`, `Invalid input data for BI table object - ${obj?.mongo_name} - ${obj?.sql_name}`);
         return null;
       }
       return obj;

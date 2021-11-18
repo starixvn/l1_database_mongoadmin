@@ -26,7 +26,7 @@
     /** Private function */
     const _parseColObject = obj => {
       if (!colSchema.test(obj)) {
-        logger.err(`Audit`, `Invalid input data for BI column object`);
+        logger.err(`Audit`, `Invalid input data for BI column object - ${obj?.mongo_name} - ${obj?.sql_name}`);
         return null;
       }
       return obj;
