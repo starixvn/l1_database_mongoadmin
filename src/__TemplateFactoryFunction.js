@@ -22,10 +22,7 @@
       return;
     };
 
-    const _descriptor = {
-      writable: false,
-      enumerable: true,
-    };
+    const _descriptor = { writable: false, enumerable: true };
     Object.defineProperties(this, {
       [util.inspect.custom] : Object.assign({value: function () { return _toString(...arguments) }}, _descriptor),
       toString              : Object.assign({value: function () { return _toString(...arguments) }}, _descriptor),
@@ -55,9 +52,9 @@
 
   /** Define deploy object */
   const _id = `$Class`;
-  const version = `1.0.0`;
+  const version = `2.0.0`;
   const changelog = {
-    '1.0.0': [
+    '2.0.0': [
       `Release [${_id}]`,
     ],
   };
