@@ -102,8 +102,8 @@
     const _buildSummaryAgg = (time, round, conf) => {
       const _roundDuration = _getRoundDuration(round);
       const _from = _getRoundedTime(time, round);
-      const _to = _getRoundedTime(_from.valueOf() + _roundDuration, round);
-      const agg = [];
+      const _to   = _getRoundedTime(_from.valueOf() + _roundDuration, round);
+      const agg   = [];
 
       agg.push({$match: {$and: [
         {[conf.fields.time.replace('$', '')]: {$gte: _from}},
@@ -111,10 +111,10 @@
       ]}});
       agg.push({$project: {_id: 0, [conf.fields.local]: 1}});
       agg.push({$lookup: {
-        from: conf.coll.group + conf.coll.postfix,
-        localField: conf.fields.local,
-        foreignField: conf.fields.map,
-        as: `bets`,
+        from          : conf.coll.group + conf.coll.postfix,
+        localField    : conf.fields.local,
+        foreignField  : conf.fields.map,
+        as            : `bets`,
       }});
       agg.push({$unwind: `$bets`});
       agg.push({$replaceWith: `$bets`});
@@ -124,23 +124,25 @@
       ]}});
       agg.push({$project: {
         _id: 0,
-        stake: {$sum: conf.fields.stake},
-        payout: {$sum: conf.fields.payout},
-        '__archive.currency': 1,
-        '__archive.isCash': 1,
+        stake     : {$sum: conf.fields.stake},
+        payout    : {$sum: conf.fields.payout},
+        partnerId : {$ifNull: [`$partnerId`, {$literal: conf.default.partnerId}]},
+        currency  : {$ifNull: [`$currency`, `$__archive.currency`]},
+        isCash    : {$ifNull: [`$__archive.isCash`, {$literal: conf.default.isCash}]},
       }});
       agg.push({$group: {
         _id: {
-          currency: {$ifNull: [`$__archive.currency`, null]},
-          isCash: {$ifNull: [`$__archive.isCash`, {$literal: conf.default.isCash}]},
+          partnerId : `$partnerId`,
+          currency  : {$toUpper: `$currency`},
+          isCash    : `$isCash`,
         },
-        stake: {$sum: `$stake`},
-        payout: {$sum: `$payout`},
-        tickets: {$sum: 1},
+        stake   : {$sum: `$stake`},
+        payout  : {$sum: `$payout`},
+        tickets : {$sum: 1},
       }});
       agg.push({$project: {
         _id: 0,
-        'key.time': {$literal: _from}, 'key.gameId': {$literal: conf.gameId}, 'key.currency': `$_id.currency`, 'key.isCash': `$_id.isCash`,
+        'key.time': {$literal: _from}, 'key.gameId': {$literal: conf.gameId}, 'key.currency': `$_id.currency`, 'key.isCash': `$_id.isCash`, 'key.partnerId': `$_id.partnerId`,
         'value.stake': `$stake`, 'value.payout': `$payout`, 'value.tickets': `$tickets`,
       }});
 
@@ -191,7 +193,7 @@
       const coll = _getSummaryColl(round);
       return summary[coll].find(
         {time: time, gameId: conf.gameId},
-        {_id: 0, time: 1, gameId: 1, currency: 1, isCash: 1},
+        {_id: 0, time: 1, gameId: 1, currency: 1, isCash: 1, partnerId: 1},
       ).map(_toSortedObjectJson).toArray();
     };
     const _parseIsCash = (value) => {
@@ -207,10 +209,10 @@
     const _processSummaryData = (doc, coll, conf, oldSums) => {
       const res = summary[coll].updateOne(doc.key, {$set: doc.value}, {upsert: true});
       if (res.insertedId) {
-        logger.info(conf.name.en, `Inserted new summary record for ${doc.key.currency} ${_parseIsCash(doc.key.isCash)}`);
+        logger.info(conf.name.en, `Inserted new summary record for ${doc.key.partnerId} ${doc.key.currency} ${_parseIsCash(doc.key.isCash)}`);
       }
       if (res.modifiedCount > 0) {
-        logger.info(conf.name.en, `Modified summary record for ${doc.key.currency} ${_parseIsCash(doc.key.isCash)}`);
+        logger.info(conf.name.en, `Modified summary record for ${doc.key.partnerId} ${doc.key.currency} ${_parseIsCash(doc.key.isCash)}`);
       }
       const idx = oldSums.indexOf(_toSortedObjectJson(Object.assign({currency: null, isCash: null}, doc.key)));
       if (idx >= 0) {
@@ -219,12 +221,12 @@
     };
     const _processOldSummaryData = (doc, coll, conf) => {
       try {
-        const _doc = Object.assign({currency: null, isCash: null}, EJSON.parse(doc));
+        const _doc = Object.assign({partnerId: null, currency: null, isCash: null}, EJSON.parse(doc));
         const res = summary[coll].deleteOne(_doc);
         if (res.deletedCount > 0) {
-          logger.warn(conf.name.en, `Deleted summary record for ${_doc.currency} ${_parseIsCash(_doc.isCash)}`);
+          logger.warn(conf.name.en, `Deleted summary record for ${_doc.partnerId} ${_doc.currency} ${_parseIsCash(_doc.isCash)}`);
         } else {
-          logger.info(conf.name.en, `No summary record deleted for ${_doc.currency} ${_parseIsCash(_doc.isCash)}`);
+          logger.info(conf.name.en, `No summary record deleted for ${_doc.partnerId} ${_doc.currency} ${_parseIsCash(_doc.isCash)}`);
         }
       } catch (e) {
         logger.err(conf.name.en, `Something is WRONG while deleting summary record for ${doc}`);
@@ -291,8 +293,11 @@
 
   /** Define deploy object */
   const _id = `$Summary`;
-  const version = `2.0.3`;
+  const version = `2.0.4`;
   const changelog = {
+    '2.0.4': [
+      `[${_id}] Add partnerId to summary keys`,
+    ],
     '2.0.3': [
       `[${_id}] Configurize default value for additional fields`,
     ],
