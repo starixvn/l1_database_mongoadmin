@@ -61,6 +61,7 @@
         requestTimeStamp    : 1,
         responseTimeStamp   : 1,
         logTimeStamp        : 1,
+        partnerId           : 1,
         'call.siteId'       : 1,
         'call.obCustId'     : 1,
         'call.currency'     : 1,
@@ -163,8 +164,11 @@
 
   /** Define deploy object */
   const _id = `$BetLog`;
-  const version = `2.0.2`;
+  const version = `2.0.3`;
   const changelog = {
+    '2.0.3': [
+      `[${_id}] Include partnerId into collected data`,
+    ],
     '2.0.2': [
       `[${_id}] Change stoping criteria`,
       `[${_id}] Perfomance tuning - Remove unnecessary sort`,
