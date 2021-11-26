@@ -150,7 +150,7 @@
     };
     const _getUidsOfNonexistingField = (conf, field) => {
       return dbs[conf.coll.db][`${conf.coll.group}${conf.coll.postfix}`].aggregate([
-        {$match: {[`__archive.${field}`]: {$exists: false}, memberId: {$gt: 0}}},
+        {$match: {[`__archive.${field}`]: {$exists: false}, [field]: null, memberId: {$gt: 0}}},
         {$project: {_id: 0, uid: 1}},
         {$group: {_id: `$uid`}},
       ]).map(_ => _._id).toArray();
@@ -297,6 +297,7 @@
   const changelog = {
     '2.0.4': [
       `[${_id}] Add partnerId to summary keys`,
+      `[${_id}] Add skip getting currency from external source if data already has it`,
     ],
     '2.0.3': [
       `[${_id}] Configurize default value for additional fields`,
