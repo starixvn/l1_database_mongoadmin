@@ -72,24 +72,26 @@
         {ts: {$gte: _from}},
         {ts: {$lt: _to}},
       ]}});
-      agg.push({$project: {_id: 0, data: 1, system: 1}});
+      agg.push({$project: {_id: 0, data: 1, system: 1, partnerId: 1}});
       agg.push({$group: {
         _id: {
-          gameId  : `$data.gameType`,
-          currency: `$data.currency`,
-          siteId  : `$data.siteId`,
-          memberId: `$data.memberId`,
-          roundId : `$data.roundId`,
-          system  : `$system`,
+          gameId    : `$data.gameType`,
+          currency  : `$data.currency`,
+          siteId    : `$data.siteId`,
+          memberId  : `$data.memberId`,
+          roundId   : `$data.roundId`,
+          system    : `$system`,
+          partnerId : {$ifNull: [`$partnerId`, {$literal: `ONEworks1`}]},
         },
         requestCount: {$sum: 1},
         totalAmount: {$sum: `$data.amount`}
       }});
       agg.push({$group: {
         _id: {
-          gameId  : `$_id.gameId`,
-          currency: `$_id.currency`,
-          system  : `$_id.system`,
+          gameId    : `$_id.gameId`,
+          currency  : `$_id.currency`,
+          system    : `$_id.system`,
+          partnerId : `$_id.partnerId`,
         },
         betCount    : {$sum: 1},
         requestCount: {$sum: `$requestCount`},
@@ -97,7 +99,7 @@
       }});
       agg.push({$project: {
         _id: 0,
-        'key.time': {$literal: _from}, 'key.gameId': `$_id.gameId`, 'key.currency': `$_id.currency`, 'key.system': `$_id.system`,
+        'key.time': {$literal: _from}, 'key.gameId': `$_id.gameId`, 'key.currency': `$_id.currency`, 'key.system': `$_id.system`, 'key.partnerId': `$_id.partnerId`,
         'value.betCount': `$betCount`, 'value.requestCount': `$requestCount`, 'value.totalAmount': `$totalAmount`,
       }});
 
@@ -110,7 +112,7 @@
       const _time = _getTime(time, round);
       return destination.find(
         {time: _time},
-        {_id: 0, time: 1, gameId: 1, currency: 1, system: 1},
+        {_id: 0, time: 1, gameId: 1, currency: 1, system: 1, partnerId: 1},
       ).map(_toSortedObjectJson).toArray();
     };
     const _parseSystem = (value) => {
@@ -128,9 +130,9 @@
     const _processSummaryData = function (doc) {
       const res = destination.updateOne(doc.key, {$set: doc.value}, {upsert: true});
       if (res.upsertedCount > 0) {
-        logger.info(util.inspect(source), `- Inserted new summary record for G${doc.key.gameId} ${doc.key.currency} ${_parseSystem(doc.key.system)}`);
+        logger.info(util.inspect(source), `- Inserted new summary record for ${doc.key.partnerId} G${doc.key.gameId} ${doc.key.currency} ${_parseSystem(doc.key.system)}`);
       } else if (res.modifiedCount > 0) {
-        logger.info(util.inspect(source), `- Modified summary record for G${doc.key.gameId} ${doc.key.currency} ${_parseSystem(doc.key.system)}`);
+        logger.info(util.inspect(source), `- Modified summary record for ${doc.key.partnerId} G${doc.key.gameId} ${doc.key.currency} ${_parseSystem(doc.key.system)}`);
       }
 
       const idx = this.oldSums.indexOf(_toSortedObjectJson(doc.key));
@@ -140,12 +142,12 @@
     };
     const _processOldSummaryData = function (doc) {
       try {
-        const _doc = Object.assign({gameId: null, currency: null, system: null}, EJSON.parse(doc));
+        const _doc = Object.assign({partnerId: null, gameId: null, currency: null, system: null}, EJSON.parse(doc));
         const res = destination.deleteOne(_doc);
         if (res.deletedCount > 0) {
-          logger.warn(util.inspect(source), `- Deleted summary record for G${_doc.gameId} ${_doc.currency} ${_parseSystem(_doc.system)}`);
+          logger.warn(util.inspect(source), `- Deleted summary record for ${_doc.partnerId} G${_doc.gameId} ${_doc.currency} ${_parseSystem(_doc.system)}`);
         } else {
-          logger.info(util.inspect(source), `- No summary record deleted for G${_doc.gameId} ${_doc.currency} ${_parseSystem(_doc.system)}`);
+          logger.info(util.inspect(source), `- No summary record deleted for ${_doc.partnerId} G${_doc.gameId} ${_doc.currency} ${_parseSystem(_doc.system)}`);
         }
       } catch (e) {
         logger.err(util.inspect(source), `- Something is WRONG while deleting summary record for ${util.inspect(doc)}`);
@@ -205,8 +207,11 @@
 
   /** Define deploy object */
   const _id = `$BetLogSummary`;
-  const version = `2.0.2`;
+  const version = `2.0.3`;
   const changelog = {
+    '2.0.3': [
+      `[${_id}] Add partnerId to summary keys`,
+    ],
     '2.0.2': [
       `[${_id}] Add value for parsing Instant system`,
     ],
