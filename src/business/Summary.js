@@ -133,7 +133,7 @@
       agg.push({$group: {
         _id: {
           partnerId : `$partnerId`,
-          currency  : {$toUpper: `$currency`},
+          currency  : `$currency`,
           isCash    : `$isCash`,
         },
         stake   : {$sum: `$stake`},
@@ -293,8 +293,11 @@
 
   /** Define deploy object */
   const _id = `$Summary`;
-  const version = `2.0.4`;
+  const version = `2.0.5`;
   const changelog = {
+    '2.0.5': [
+      `[${_id}] Revert uppercase currency`,
+    ],
     '2.0.4': [
       `[${_id}] Add partnerId to summary keys`,
       `[${_id}] Add skip getting currency from external source if data already has it`,
