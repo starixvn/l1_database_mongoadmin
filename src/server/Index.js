@@ -93,6 +93,9 @@
       if (idxObj.unique) {
         name = `U${name}`;
       }
+      if (idxObj.sparse) {
+        name = `S${name}`;
+      }
       if (idxObj.partialFilterExpression) {
         name = `F${name}`;
       }
@@ -242,8 +245,11 @@
 
   /** Define deploy object */
   const _id = `$Index`;
-  const version = `2.0.1`;
+  const version = `2.0.2`;
   const changelog = {
+    '2.0.2': [
+      `[${_id}] Include sparse option in index name`,
+    ],
     '2.0.1': [
       `[${_id}] Remove usage of internal field, using supported methods instead`,
       `[${_id}] Remove default collation, let server decide`,

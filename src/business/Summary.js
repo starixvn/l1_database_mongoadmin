@@ -126,6 +126,7 @@
         _id: 0,
         stake     : {$sum: conf.fields.stake},
         payout    : {$sum: conf.fields.payout},
+        refund    : {$sum: conf.fields.refund},
         partnerId : {$ifNull: [`$partnerId`, {$literal: conf.default.partnerId}]},
         currency  : {$ifNull: [`$currency`, `$__archive.currency`]},
         isCash    : {$ifNull: [`$__archive.isCash`, {$literal: conf.default.isCash}]},
@@ -133,17 +134,18 @@
       agg.push({$group: {
         _id: {
           partnerId : `$partnerId`,
-          currency  : {$toUpper: `$currency`},
+          currency  : `$currency`,
           isCash    : `$isCash`,
         },
         stake   : {$sum: `$stake`},
         payout  : {$sum: `$payout`},
+        refund  : {$sum: `$refund`},
         tickets : {$sum: 1},
       }});
       agg.push({$project: {
         _id: 0,
         'key.time': {$literal: _from}, 'key.gameId': {$literal: conf.gameId}, 'key.currency': `$_id.currency`, 'key.isCash': `$_id.isCash`, 'key.partnerId': `$_id.partnerId`,
-        'value.stake': `$stake`, 'value.payout': `$payout`, 'value.tickets': `$tickets`,
+        'value.stake': `$stake`, 'value.refund': `$refund`, 'value.payout': `$payout`, 'value.tickets': `$tickets`,
       }});
 
       return agg;
@@ -293,8 +295,12 @@
 
   /** Define deploy object */
   const _id = `$Summary`;
-  const version = `2.0.4`;
+  const version = `2.0.5`;
   const changelog = {
+    '2.0.5': [
+      `[${_id}] Revert uppercase currency`,
+      `[${_id}] Include refund data`,
+    ],
     '2.0.4': [
       `[${_id}] Add partnerId to summary keys`,
       `[${_id}] Add skip getting currency from external source if data already has it`,
