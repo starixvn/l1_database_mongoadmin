@@ -40,6 +40,7 @@
           log       : data.logTimeStamp == null ? null : logTS - requestTS,
         },
         data    : {
+          partnerId : data.partnerId,
           siteId    : data.call?.siteId,
           memberId  : data.call?.obCustId,
           currency  : data.call?.currency,

@@ -81,7 +81,7 @@
           memberId  : `$data.memberId`,
           roundId   : `$data.roundId`,
           system    : `$system`,
-          partnerId : {$ifNull: [`$partnerId`, {$literal: `ONEworks1`}]},
+          partnerId : {$ifNull: [`$data.partnerId`, {$literal: `ONEworks1`}]},
         },
         requestCount: {$sum: 1},
         totalAmount: {$sum: `$data.amount`}
