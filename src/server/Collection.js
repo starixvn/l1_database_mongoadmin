@@ -10,11 +10,16 @@
       '!name'   : "Collection",
       'type'    : "string",
       '!options': {
-        'capped'    : "boolean",
-        'size'      : ["number", Long],
-        'max'       : "number",
-        'collation' : $Collation,
-        'validator' : "object",
+        'capped'        : "boolean",
+        'size'          : ["number", Long],
+        'max'           : "number",
+        'collation'     : $Collation,
+        'validator'     : "object",
+        'storageEngine' : {
+          'wiredTiger'  : {
+            'configString'  : "string",
+          },
+        },
       },
       'info'    : {
         'readOnly'  : "boolean",
@@ -134,6 +139,25 @@
         return;
       }
     };
+    const _validateOthers = (title) => {
+      const others    = {...infoObj.options};
+      const srvOthers = {...srvInfoObj.options};
+
+      [`capped`, `size`, `max`, `collation`].forEach(_ => {
+        delete others[_];
+        delete srvOthers[_];
+      })
+
+      const options = {
+        need: EJSON.stringify(others),
+        have: EJSON.stringify(srvOthers),
+      };
+      if (options.need != options.have) {
+        logger.warn(title, `Options of ${util.inspect(infoObj.name)} MISMATCHED:`);
+        logger.warn(title, `  - Need: ${options.need}`);
+        logger.warn(title, `  - Have: ${options.have}`);
+      }
+    };
     const _validate = () => {
       const title = `Validate`;
       _loadServerCollectionInfo();
@@ -144,6 +168,7 @@
       _validateMeta   (title);
       _validateCollate(title);
       _validateCapped (title);
+      _validateOthers (title);
     }
 
     const _descriptor = {
@@ -186,8 +211,11 @@
 
   /** Define deploy object */
   const _id = `$Collection`;
-  const version = `2.0.1`;
+  const version = `2.0.2`;
   const changelog = {
+    '2.0.2': [
+      `[${_id}] - Auto validate all input options`,
+    ],
     '2.0.1': [
       `[${_id}] - Update string related info`,
     ],
