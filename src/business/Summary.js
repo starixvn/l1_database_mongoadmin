@@ -152,28 +152,48 @@
     };
     const _getUidsOfNonexistingField = (conf, field) => {
       return dbs[conf.coll.db][`${conf.coll.group}${conf.coll.postfix}`].aggregate([
-        {$match: {[`__archive.${field}`]: {$exists: false}, [field]: null, memberId: {$gt: 0}}},
+        {$match: {[`__archive.${field}`]: null, [field]: null, [conf.fields.memberId]: {$gt: 0}}},
         {$project: {_id: 0, uid: 1}},
         {$group: {_id: `$uid`}},
       ]).map(_ => _._id).toArray();
     };
-    const _getUpdateNonexistingFieldPipe = (conf, field, uids) => {
+    const _getPipeForUpdateNonexistingFieldByUids = (conf, field, uids) => {
       return dbs[conf.coll.db].userinfos.find(
         {id: {$in: uids}},
         {_id: 0, id: 1, [field]: 1},
       ).map(_ => {
         return { updateMany: {
-          filter: {uid: _.id, [`__archive.${field}`]: {$exists: false}},
+          filter: {uid: _.id, [`__archive.${field}`]: null},
           update: [
             {$set: {[`__archive.${field}`]: {$literal: _[field] ?? conf.default[field] ?? null}}}
           ],
         }};
       }).toArray();
     };
-    const _insertInternalField = (conf, field) => {
+    const _getMemberIdsOfNonexistingField = (conf, field) => {
+      return dbs[conf.coll.db][`${conf.coll.group}${conf.coll.postfix}`].aggregate([
+        {$match: {[`__archive.${field}`]: null, [field]: null, [conf.fields.memberId]: {$gt: 0}}},
+        {$project: {_id: 0, [conf.fields.memberId]: 1}},
+        {$group: {_id: `$${conf.fields.memberId}`}},
+      ]).map(_ => _._id).toArray();
+    };
+    const _getPipeForUpdateNonexistingFieldByMemberIds = (conf, field, memberIds) => {
+      return dbs[conf.coll.db].users.find(
+        {'local.memberId': {$in: memberIds}},
+        {_id: 0, 'local.memberId': 1, [`local.${field}`]: 1},
+      ).map(_ => {
+        return { updateMany: {
+          filter: {[conf.fields.memberId]: _.local.memberId, [`__archive.${field}`]: null},
+          update: [
+            {$set: {[`__archive.${field}`]: {$literal: _.local[field] ?? conf.default[field] ?? null}}}
+          ],
+        }};
+      }).toArray();
+    };
+    const _insertInternalFieldByUids = (conf, field) => {
       const timer = $Timer();
       const uids = _getUidsOfNonexistingField(conf, field);
-      const updPipe = _getUpdateNonexistingFieldPipe(conf, field, uids);
+      const updPipe = _getPipeForUpdateNonexistingFieldByUids(conf, field, uids);
 
       if (!updPipe.length) return;
       const res = dbs[conf.coll.db][`${conf.coll.group}${conf.coll.postfix}`].bulkWrite(updPipe, {ordered: false});
@@ -181,6 +201,22 @@
         logger.info(conf.name.en, `Added ${field} into [${conf.coll.group + conf.coll.postfix}] collection in ${timer.getTimerDuration()} ms.`);
         logger.info(conf.name.en, `  • D-${res.deletedCount} • I-${res.insertedCount} • M-${res.matchedCount} • U-${res.upsertedCount} •`);
       }
+    };
+    const _insertInternalFieldByMemberIds = (conf, field) => {
+      const timer = $Timer();
+      const memberIds = _getMemberIdsOfNonexistingField(conf, field);
+      const updPipe = _getPipeForUpdateNonexistingFieldByMemberIds(conf, field, memberIds);
+
+      if (!updPipe.length) return;
+      const res = dbs[conf.coll.db][`${conf.coll.group}${conf.coll.postfix}`].bulkWrite(updPipe, {ordered: false});
+      if (res.deletedCount + res.insertedCount + res.matchedCount + res.upsertedCount > 0) {
+        logger.info(conf.name.en, `Added ${field} into [${conf.coll.group + conf.coll.postfix}] collection in ${timer.getTimerDuration()} ms.`);
+        logger.info(conf.name.en, `  • D-${res.deletedCount} • I-${res.insertedCount} • M-${res.matchedCount} • U-${res.upsertedCount} •`);
+      }
+    };
+    const _insertInternalField = (conf, field) => {
+      _insertInternalFieldByUids(conf, field);
+      _insertInternalFieldByMemberIds(conf, field);
     };
     const _insertInternalData = (conf) => {
       if (conf.config.hasCurrency) return;
@@ -263,16 +299,25 @@
     const _runHourlySummary = (time, force = false) => {
       return _runSummary(time, 'HOUR', force);
     };
+    const _runHourlySummariesInDay = (time, force = false) => {
+      let _time = _getRoundedTime(time || (Date.now() - _getRoundDuration('DAY')), 'DAY');
+      const _timeEnd = new Date(_time.valueOf() + _getRoundDuration('DAY'));
+      while (_time < _timeEnd) {
+        _runSummary(_time, 'HOUR', force);
+        _time = new Date(_time.valueOf() + _getRoundDuration('HOUR'));
+      }
+    };
 
     const _descriptor = {
       writable: false,
       enumerable: true,
     };
     Object.defineProperties(this, {
-      [util.inspect.custom] : Object.assign({value: function () { return _toString        (...arguments) }}, _descriptor),
-      toString              : Object.assign({value: function () { return _toString        (...arguments) }}, _descriptor),
-      runDailySummary       : Object.assign({value: function () { return _runDailySummary (...arguments) }}, _descriptor),
-      runHourlySummary      : Object.assign({value: function () { return _runHourlySummary(...arguments) }}, _descriptor),
+      [util.inspect.custom]   : Object.assign({value: function () { return _toString                (...arguments) }}, _descriptor),
+      toString                : Object.assign({value: function () { return _toString                (...arguments) }}, _descriptor),
+      runDailySummary         : Object.assign({value: function () { return _runDailySummary         (...arguments) }}, _descriptor),
+      runHourlySummary        : Object.assign({value: function () { return _runHourlySummary        (...arguments) }}, _descriptor),
+      runHourlySummariesInDay : Object.assign({value: function () { return _runHourlySummariesInDay (...arguments) }}, _descriptor),
     });
 
     Object.deepFreeze(this);
@@ -286,8 +331,9 @@
       help: function () {
         return `\
 [$Summary](mongo, summary) - Object helper for summary data on {mongo} instance to {summary} database
-  .runDailySummary(time)  - Run daily summary for the day that contains {time}
-  .runHourlySummary(time) - Run hourly summary for the hour that contains {time}
+  .runDailySummary(time)          - Run daily summary for the day that contains {time}
+  .runHourlySummary(time)         - Run hourly summary for the hour that contains {time}
+  .runHourlySummariesInDay(time)  - Run hourly summary for hours in the day that contains {time}
 `;
       },
     };
@@ -295,8 +341,14 @@
 
   /** Define deploy object */
   const _id = `$Summary`;
-  const version = `2.0.5`;
+  const version = `2.0.7`;
   const changelog = {
+    '2.0.7': [
+      `[${_id}] Add new method using memberId for getting internal fields when uid is not available`,
+    ],
+    '2.0.6': [
+      `[${_id}] Add runHourlySummariesInDay method`,
+    ],
     '2.0.5': [
       `[${_id}] Revert uppercase currency`,
       `[${_id}] Include refund data`,
