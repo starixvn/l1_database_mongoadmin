@@ -299,9 +299,11 @@
     const _runHourlySummary = (time, force = false) => {
       return _runSummary(time, 'HOUR', force);
     };
-    const _runHourlySummariesInDay = (time, force = false) => {
+    const _runSummariesInDay = (time, force = false) => {
       let _time = _getRoundedTime(time || (Date.now() - _getRoundDuration('DAY')), 'DAY');
       const _timeEnd = new Date(_time.valueOf() + _getRoundDuration('DAY'));
+
+      _runSummary(_time, 'DAY', force);
       while (_time < _timeEnd) {
         _runSummary(_time, 'HOUR', force);
         _time = new Date(_time.valueOf() + _getRoundDuration('HOUR'));
@@ -313,11 +315,11 @@
       enumerable: true,
     };
     Object.defineProperties(this, {
-      [util.inspect.custom]   : Object.assign({value: function () { return _toString                (...arguments) }}, _descriptor),
-      toString                : Object.assign({value: function () { return _toString                (...arguments) }}, _descriptor),
-      runDailySummary         : Object.assign({value: function () { return _runDailySummary         (...arguments) }}, _descriptor),
-      runHourlySummary        : Object.assign({value: function () { return _runHourlySummary        (...arguments) }}, _descriptor),
-      runHourlySummariesInDay : Object.assign({value: function () { return _runHourlySummariesInDay (...arguments) }}, _descriptor),
+      [util.inspect.custom] : Object.assign({value: function () { return _toString          (...arguments) }}, _descriptor),
+      toString              : Object.assign({value: function () { return _toString          (...arguments) }}, _descriptor),
+      runDailySummary       : Object.assign({value: function () { return _runDailySummary   (...arguments) }}, _descriptor),
+      runHourlySummary      : Object.assign({value: function () { return _runHourlySummary  (...arguments) }}, _descriptor),
+      runSummariesInDay     : Object.assign({value: function () { return _runSummariesInDay (...arguments) }}, _descriptor),
     });
 
     Object.deepFreeze(this);
@@ -331,9 +333,9 @@
       help: function () {
         return `\
 [$Summary](mongo, summary) - Object helper for summary data on {mongo} instance to {summary} database
-  .runDailySummary(time)          - Run daily summary for the day that contains {time}
-  .runHourlySummary(time)         - Run hourly summary for the hour that contains {time}
-  .runHourlySummariesInDay(time)  - Run hourly summary for hours in the day that contains {time}
+  .runDailySummary(time)   - Run daily summary for the day that contains {time}
+  .runHourlySummary(time)  - Run hourly summary for the hour that contains {time}
+  .runSummariesInDay(time) - Run summaries for hours in the day and the day that contains {time}
 `;
       },
     };
@@ -341,8 +343,11 @@
 
   /** Define deploy object */
   const _id = `$Summary`;
-  const version = `2.0.7`;
+  const version = `2.0.8`;
   const changelog = {
+    '2.0.8': [
+      `[${_id}] Change runHourlySummariesInDay to runSummariesInDay`,
+    ],
     '2.0.7': [
       `[${_id}] Add new method using memberId for getting internal fields when uid is not available`,
     ],
