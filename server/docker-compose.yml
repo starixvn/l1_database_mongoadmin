@@ -25,6 +25,11 @@ services:
     command: --config /etc/mongod.conf --port ${MONGOD_PORT} --replSet ${MONGOD_REPL}${MONGOD_ENV} --auth
     security_opt:
       - seccomp=unconfined
+    healthcheck:
+      test: mongo 127.0.0.1:${MONGOD_PORT}/admin --quiet --norc --eval 'if (!db.runCommand({ping:1}).ok) throw 1;'
+      interval: 10s
+      timeout: 10s
+      retries: 5
 
 secrets:
   keyFile:
