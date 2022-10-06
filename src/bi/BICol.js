@@ -72,6 +72,8 @@
         bool  : { mongo_type: `bool`          , sql_type: `boolean`   },
         date  : { mongo_type: `date`          , sql_type: `timestamp` },
         filter: { mongo_type: `mongo.Filter`  , sql_type: `varchar`   },
+        object: { mongo_type: `bson.Object`   , sql_type: `varchar`   },
+        array : { mongo_type: `bson.Array`    , sql_type: `varchar`   },
       },
       is$BICol: function () {
         return $Schema($BICol).test(...arguments);
