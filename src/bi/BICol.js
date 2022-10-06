@@ -106,8 +106,11 @@
 
   /** Define deploy object */
   const _id = `$BICol`;
-  const version = `2.0.0`;
+  const version = `2.0.1`;
   const changelog = {
+    '2.0.1': [
+      `[${_id}] Add types`,
+    ],
     '2.0.0': [
       `Release [${_id}]`,
     ],
