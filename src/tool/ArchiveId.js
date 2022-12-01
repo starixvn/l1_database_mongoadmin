@@ -68,7 +68,7 @@
        *  • Only archive data EARLIER than cut off time based on config field
        */
       const filter = Object.assign(
-        {'__archive.eventtime': {$exists: false}},
+        {'__archive.eventtime': null},
         options.filter,
         {[options.joinCol]: {$in: dataOptions.map(_mapDataValue).filter(Boolean)}},
       );
@@ -103,7 +103,7 @@
       dataOptions.forEach(data => {
         updPipe.push({updateMany: {
           filter: {
-            '__archive.eventtime' : {$exists: false},
+            '__archive.eventtime' : null,
             [options.joinCol]     : data.joinVal,
           },
           update: [
@@ -247,8 +247,11 @@
 
   /** Define deploy object */
   const _id = `$ArchiveId`;
-  const version = `2.0.1`;
+  const version = `2.0.2`;
   const changelog = {
+    '2.0.2': [
+      `[${_id}] Query null instead of {$exists: false}`,
+    ],
     '2.0.1': [
       `[${_id}] Remove usage of internal field, using supported methods instead`,
     ],

@@ -91,7 +91,7 @@
        *  • Check if the archive flag exists
        *  • Only archive data EARLIER than cut off time based on config field
        */
-      const filter = Object.assign({'__archive.eventtime': {$exists: false}}, options.filter);
+      const filter = Object.assign({'__archive.eventtime': null}, options.filter);
       if (options.timeField) {
         filter[options.timeField] = {$lt: options.cutOffTime};
       }
@@ -293,8 +293,11 @@
 
   /** Define deploy object */
   const _id = `$ArchiveTime`;
-  const version = `2.0.1`;
+  const version = `2.0.2`;
   const changelog = {
+    '2.0.2': [
+      `[${_id}] Query null instead of {$exists: false}`,
+    ],
     '2.0.1': [
       `[${_id}] Remove usage of internal field, using supported methods instead`,
     ],
